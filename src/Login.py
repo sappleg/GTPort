@@ -1,5 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/python3.2
+'''
+Created on Nov 12, 2012
 
+@author: spencer
+'''
 from tkinter import *
 
 # This is a class called Login. We will be able to use this class to create
