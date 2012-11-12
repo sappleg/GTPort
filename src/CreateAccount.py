@@ -15,6 +15,8 @@ class CreateAccount:
         self.username = StringVar()
         self.password = StringVar()
         self.confirmPassword = StringVar()
+        self.userType = StringVar()
+        self.userType.set("Student")
 
         self.makeWindow()
         self.root.mainloop()
@@ -39,7 +41,7 @@ class CreateAccount:
         passwordLabel = Label(passwordFrame, text="Password: ")
         passwordLabel.pack(side=LEFT)
 
-        passwordEntry = Entry(passwordFrame, textvariable = self.password)
+        passwordEntry = Entry(passwordFrame, textvariable = self.password, show='*')
         passwordEntry.pack(side=LEFT, padx=10)
 
         confirmPasswordFrame = Frame(self.root)
@@ -48,8 +50,17 @@ class CreateAccount:
         confirmPasswordLabel = Label(confirmPasswordFrame, text="Confirm Password: ")
         confirmPasswordLabel.pack(side=LEFT)
 
-        confirmPasswordEntry = Entry(confirmPasswordFrame, textvariable = self.password)
+        confirmPasswordEntry = Entry(confirmPasswordFrame, textvariable = self.confirmPassword, show='*')
         confirmPasswordEntry.pack(side=LEFT, padx=10)
+
+        userTypeFrame = Frame(self.root)
+        userTypeFrame.pack(padx=15)
+
+        userTypeLabel = Label(userTypeFrame, text="Confirm Password: ")
+        userTypeLabel.pack(side=LEFT)
+
+        userTypeOptionMenu = OptionMenu(userTypeFrame, self.userType, "Student", "Instructor")
+        userTypeOptionMenu.pack(side=LEFT)
 
         buttonFrame = Frame(self.root)
         buttonFrame.pack(fill=X)
@@ -57,7 +68,7 @@ class CreateAccount:
         registerButton = Button(buttonFrame, text="Register", command=self.print_this)
         registerButton.pack(side=RIGHT)
 
-        cancelButton = Button(buttonFrame, text="Cancel", command=self.print_this)
+        cancelButton = Button(buttonFrame, text="Cancel", command=usernameFrame.quit)
         cancelButton.pack(side=RIGHT)
 
     # This method is just a place holder to print out the username and password
@@ -66,6 +77,8 @@ class CreateAccount:
     def print_this(self):
         print(self.username.get())
         print(self.password.get())
-        
+        print(self.confirmPassword.get())
+        print(self.userType.get())
+
 if __name__=="__main__":
     app = CreateAccount()
