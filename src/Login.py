@@ -32,7 +32,7 @@ class Login:
     def makeWindow(self):
 
         usernameFrame = Frame(self.root)
-        usernameFrame.pack(padx=15, pady=15)
+        usernameFrame.pack(padx=15)
 
         usernameLabel = Label(usernameFrame, text="Username: ")
         usernameLabel.pack(side=LEFT)
@@ -52,11 +52,11 @@ class Login:
         buttonFrame = Frame(self.root)
         buttonFrame.pack(fill=X)
 
-        createAccountButton = Button(buttonFrame, text="Create Account", command=self.print_this)
-        createAccountButton.pack(side=RIGHT)
-
         loginButton = Button(buttonFrame, text="Login", command=self.print_this)
         loginButton.pack(side=RIGHT)
+
+        createAccountButton = Button(buttonFrame, text="Create Account", command=self.print_this)
+        createAccountButton.pack(side=RIGHT)
 
     # This method is just a place holder to print out the username and password
     # values gathered from the textfields. This will not be used in the actual
