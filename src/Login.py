@@ -48,11 +48,11 @@ class Login:
         buttonFrame = Frame(self.root)
         buttonFrame.pack(fill=X)
 
-        button = Button(buttonFrame, text="print", command=self.print_this)
-        button.pack(side=RIGHT)
+        createAccountButton = Button(buttonFrame, text="Create Account", command=self.print_this)
+        createAccountButton.pack(side=RIGHT)
 
-        exit = Button(buttonFrame, text="exit", command=usernameFrame.quit)
-        exit.pack(side=RIGHT)
+        loginButton = Button(buttonFrame, text="Login", command=self.print_this)
+        loginButton.pack(side=RIGHT)
 
     # This method is just a place holder to print out the username and password
     # values gathered from the textfields. This will not be used in the actual
