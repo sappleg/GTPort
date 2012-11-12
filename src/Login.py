@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from Tkinter import *
+from tkinter import *
 
 # This is a class called Login. We will be able to use this class to create
 # several instances of this view. Therefore we could have several users
@@ -58,8 +58,8 @@ class Login:
     # values gathered from the textfields. This will not be used in the actual
     # application
     def print_this(self):
-        print self.username.get()
-        print self.password.get()
+        print(self.username.get())
+        print(self.password.get())
 
 # This is the main method of the Login file to be used for debuggin purposes.
 # This method is used to create an instance of the Login class.
