@@ -12,8 +12,7 @@ class FacultyHomepage:
         self.root = Tk()
         self.root.title('Home Page')
 
-        self.personalInfo = IntVar()
-        self.facultyServices = IntVar()
+        self.selection = IntVar()
 
         self.makeWindow()
         self.root.mainloop()
@@ -26,11 +25,11 @@ class FacultyHomepage:
         radioFrame = Frame(self.root)
         radioFrame.pack(padx=15)
         
-        self.personalInfoButton = Radiobutton(self.root, text="Personal Information", variable=self.personalInfo, value=1, command=self.PIRadio)
-        self.personalInfoButton.pack(anchor=W)
+        personalInfoButton = Radiobutton(self.root, text="Personal Information", variable=self.selection, value=1)
+        personalInfoButton.pack(anchor=W)
         
-        self.facultyServicesButton = Radiobutton(self.root, text="Faculty Services", variable=self.facultyServices, value=2, command=self.FSRadio)
-        self.facultyServicesButton.pack(anchor=W)
+        facultyServicesButton = Radiobutton(self.root, text="Faculty Services", variable=self.selection, value=2)
+        facultyServicesButton.pack(anchor=W)
 
         buttonFrame = Frame(self.root)
         buttonFrame.pack(fill=X)
@@ -40,14 +39,6 @@ class FacultyHomepage:
 
         logoutButton = Button(buttonFrame, text="Logout", command=self.print_this())
         logoutButton.pack(side=RIGHT)
-    
-    def PIRadio(self):
-        self.facultyServicesButton.deselect()
-        self.facultyServices.set(0);
-        
-    def FSRadio(self):
-        self.personalInfoButton.deselect()
-        self.personalInfo.set(0);
 
     # This method is just a place holder to print out the username and password
     # values gathered from the textfields. This will not be used in the actual

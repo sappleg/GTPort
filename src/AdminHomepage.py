@@ -12,8 +12,7 @@ class AdminHomepage:
         self.root = Tk()
         self.root.title('Home Page')
 
-        self.adminReport = IntVar()
-        self.addCourse = IntVar()
+        self.selection = IntVar()
 
         self.makeWindow()
         self.root.mainloop()
@@ -26,10 +25,10 @@ class AdminHomepage:
         radioFrame = Frame(self.root)
         radioFrame.pack(padx=15)
         
-        self.adminReportButton = Radiobutton(self.root, text="View Administrative Report", variable=self.adminReport, value=1, command=self.ARRadio)
+        self.adminReportButton = Radiobutton(self.root, text="View Administrative Report", variable=self.selection, value=1)
         self.adminReportButton.pack(anchor=W)
         
-        self.addCourseButton = Radiobutton(self.root, text="Add New Course", variable=self.addCourse, value=2, command=self.ACRadio)
+        self.addCourseButton = Radiobutton(self.root, text="Add New Course", variable=self.selection, value=2)
         self.addCourseButton.pack(anchor=W)
 
         buttonFrame = Frame(self.root)
@@ -40,14 +39,6 @@ class AdminHomepage:
 
         logoutButton = Button(buttonFrame, text="Logout", command=self.print_this())
         logoutButton.pack(side=RIGHT)
-    
-    def ARRadio(self):
-        self.addCourseButton.deselect()
-        self.addCourse.set(0);
-        
-    def ACRadio(self):
-        self.adminReportButton.deselect()
-        self.adminReport.set(0);
 
     # This method is just a place holder to print out the username and password
     # values gathered from the textfields. This will not be used in the actual
