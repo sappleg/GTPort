@@ -22,8 +22,7 @@ class StudentPI:
 
         self.name = StringVar()
         self.dob = StringVar()
-        self.gender = StringVar()
-        self.gender.set("Male")
+        self.gender = StringVar(value="Male")
         self.address = StringVar()
         self.permAddress = StringVar()
         self.contactNumber = StringVar()
@@ -31,12 +30,9 @@ class StudentPI:
         self.tutorWilling = IntVar()
         self.tutorCourses = []
         self.tutorCoursesSelected = []
-        self.currentTutorCourse = StringVar()
-        self.currentTutorCourse.set("CS8781")
-        self.major = StringVar()
-        self.major.set("Aerospace Engineering")
-        self.degree = StringVar()
-        self.degree.set("BS")
+        self.currentTutorCourse = StringVar(value="CS8781")
+        self.major = StringVar(value="Aerospace Engineering")
+        self.degree = StringVar(value="BS")
         self.previousEduSchool = []
         self.currentPreviousEduSchool = StringVar()
         self.previousEduMajor = []
