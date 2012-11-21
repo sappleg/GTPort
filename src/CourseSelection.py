@@ -1,3 +1,4 @@
+
 from tkinter import *
 import pymysql
 
@@ -5,20 +6,17 @@ class courseSelection:
     def __init__ (self):
         self.root = Tk()
         self.root.title('Course Selection')
-
-        self.var1 = StringVar()
-        self.var1.set("Audit")
-
-        self.var2 = StringVar()
-        self.var2.set("Audit")
-
+        
         self.var3 = StringVar()
+        self.var2 = StringVar()
+        self.var1 = StringVar()
         self.var3.set("Audit")
+        self.var2.set("Audit")
+        self.var1.set("Audit")
 
         self.makeWindow()
         self.root.mainloop()
         
-
     def makeWindow(self):
         
 #Labels at the top        
@@ -70,7 +68,7 @@ class courseSelection:
         label20.grid(row = 3, column = 7)
         label21 = Label(self.root, text = "KACB 2443")
         label21.grid(row = 3, column = 8)
-
+        
 #check buttons
         checkbutt = Checkbutton(self.root).grid(row = 3, column = 0)
         checkbutt2 = Checkbutton(self.root).grid(row = 4, column = 0)
@@ -80,8 +78,10 @@ class courseSelection:
         listbox = OptionMenu(self.root, self.var1, "Audit", "Pass/Fail", "Registered")
         listbox.grid(row = 3, column = 9)
 
+
         listbox2 = OptionMenu(self.root, self.var2, "Audit", "Pass/Fail", "Registered")
         listbox2.grid(row = 4, column = 9)
+
 
         listbox3 = OptionMenu(self.root, self.var3, "Audit", "Pass/Fail", "Registered")
         listbox3.grid(row = 5, column = 9)
