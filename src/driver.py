@@ -7,14 +7,21 @@ from views.StudentPI import StudentPI
 from views.FacultyPI import FacultyPI
 from views.StudentServices import StudentServices
 from views.FacultyServices import FacultyServices
+from models.Student import Student
+#from models.Faculty import Faculty
+#from models.Admin import Admin
 
 class Driver:
+    student = Student()
+    #faculty = Faculty()
 
     def __init__(self):
         login = Login(self)
 
-    def launch_homepage(self,counts):
+    def launch_homepage(self,counts,login):
         if counts[0]:
+            self.student.setUsername(login.getUsername())
+            print(self.student.getUsername())
             shp = StudentHomepage(self)
         elif counts[1]:
             fhp = FacultyHomepage(self)
@@ -24,7 +31,7 @@ class Driver:
     def launch_homepage_next(self,selection,user_type):
         if user_type == "student":
             if selection == 0:
-                spi = StudentPI()
+                spi = StudentPI(self.student.getUsername())
             elif selection == 1:
                 ss = StudentServices()
         elif user_type == "instructor":

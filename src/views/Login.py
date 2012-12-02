@@ -103,10 +103,13 @@ class Login:
 
             #Launches homepage in driver
             self.Driver.launch_homepage([student_count, instructor_count,
-                admin_count])
+                admin_count], self)
 
         else:
             showinfo("", "Login unsuccessful")
+
+    def getUsername(self):
+        return self.username.get()
 
 # This is the main method of the Login file to be used for debuggin purposes.
 # This method is used to create an instance of the Login class.

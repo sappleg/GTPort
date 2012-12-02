@@ -16,7 +16,7 @@ class StudentPI:
     # username and password variables (specific to each instance of Login). I also
     # construct the view and run it through the computer's clock cycles (makeWindow
     # and mainloop)
-    def __init__(self):
+    def __init__(self, un):
         self.root = Tk()
         self.root.title('Personal Information')
 
@@ -120,10 +120,10 @@ class StudentPI:
 
         tutorWillingLabel = Label(tutorWillingFrame, text="Willing to tutor? ")
         tutorWillingLabel.pack(side=LEFT)
-        
+
         yesRadioButton = Radiobutton(tutorWillingFrame, text="Yes", variable=self.tutorWilling,value=1)
         yesRadioButton.pack(side=LEFT)
-        
+
         noRadioButton = Radiobutton(tutorWillingFrame, text="No", variable=self.tutorWilling,value=2)
         noRadioButton.pack(side=LEFT)
 
@@ -138,7 +138,7 @@ class StudentPI:
 
         addCourseButton = Button(tutorCoursesFrame, text="+", command=self.print_this)
         addCourseButton.pack(side=LEFT)
-        
+
         tutorCoursesText = Text(tutorCoursesFrame, height=1, width=50, background="white")
         tutorCoursesText.pack(side=LEFT)
 
@@ -161,47 +161,43 @@ class StudentPI:
 
         previousEduLabelFrame = Frame(self.root)
         previousEduLabelFrame.pack(padx=15)
-        
+
         previousEduLabel = Label(previousEduLabelFrame, text="Previous Education ")
         previousEduLabel.pack()
 
         previousEduFrame = Frame(self.root, borderwidth=1)
         previousEduFrame.pack()
-        
+
         previousEduSchoolNameLabel = Label(previousEduFrame, text="Name of Institution Attended ")
         previousEduSchoolNameLabel.grid(row=0, column=0)
 
         previousEduSchoolNameEntry = Entry(previousEduFrame, textvariable = self.currentPreviousEduSchool)
         previousEduSchoolNameEntry.grid(row=0, column=1)
-        
+
         previousEduMajorLabel = Label(previousEduFrame, text="Major ")
         previousEduMajorLabel.grid(row=1, column=0)
 
         previousEduMajorEntry = Entry(previousEduFrame, textvariable = self.currentPreviousEduMajor)
         previousEduMajorEntry.grid(row=1, column=1)
-        
+
         previousEduDegreeLabel = Label(previousEduFrame, text="Degree ")
         previousEduDegreeLabel.grid(row=2, column=0)
 
         previousEduDegreeEntry = Entry(previousEduFrame, textvariable = self.currentPreviousEduDegree)
         previousEduDegreeEntry.grid(row=2, column=1)
-        
+
         previousEduGradYearLabel = Label(previousEduFrame, text="Year of graduation ")
         previousEduGradYearLabel.grid(row=3, column=0)
 
         previousEduGradYearEntry = Entry(previousEduFrame, textvariable = self.currentPreviousEduGradYear)
         previousEduGradYearEntry.grid(row=3, column=1)
-        
+
         previousEduGPALabel = Label(previousEduFrame, text="GPA ")
         previousEduGPALabel.grid(row=4, column=0)
 
         previousEduGPAEntry = Entry(previousEduFrame, textvariable = self.currentPreviousEduGPA)
         previousEduGPAEntry.grid(row=4, column=1)
-        
-        
-        
-        
-        
+
 
         buttonFrame = Frame(self.root)
         buttonFrame.pack(fill=X)
@@ -211,6 +207,17 @@ class StudentPI:
 
         addEduButton = Button(buttonFrame, text="Add Education", command=self.print_this)
         addEduButton.pack(side=LEFT)
+
+    def populate(self):
+        self.db = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36", db='cs4400_Group36')
+        c = self.db.cursor()
+        SQL = "SELECT * FROM student WHERE username = %s"
+        c.execute(SQL, (self.username.get()))
+        counts = c.fetchall()
+        self.handleLogin(counts[0][0])
+        c.close()
+        self.db.close()
+
 
     # This method is just a place holder to print out the username and password
     # values gathered from the textfields. This will not be used in the actual
