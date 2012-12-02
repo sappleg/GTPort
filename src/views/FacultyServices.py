@@ -2,7 +2,7 @@
 from tkinter import *
 import pymysql
 
-class facultyServices:
+class FacultyServices:
     def __init__ (self):
         self.root = Tk()
         self.root.title('Faculty Services')

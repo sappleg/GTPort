@@ -43,7 +43,6 @@ class StudentPI:
         self.currentPreviousEduGradYear = StringVar()
         self.previousEduGPA = []
         self.currentPreviousEduGPA = StringVar()
-        
 
         self.makeWindow()
         self.root.mainloop()

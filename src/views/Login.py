@@ -60,15 +60,8 @@ class Login:
         loginButton = Button(buttonFrame, text="Login", command=self.login)
         loginButton.pack(side=RIGHT)
 
-        createAccountButton = Button(buttonFrame, text="Create Account", command=self.print_this)
+        createAccountButton = Button(buttonFrame, text="Create Account")
         createAccountButton.pack(side=RIGHT)
-
-    # This method is just a place holder to print out the username and password
-    # values gathered from the textfields. This will not be used in the actual
-    # application
-    def print_this(self):
-        print(self.username.get())
-        print(self.password.get())
 
     def login(self):
         if self.username.get() == "" or self.password.get() == "":

@@ -8,7 +8,9 @@ from tkinter import *
 
 class FacultyHomepage:
 
-    def __init__(self):
+    def __init__(self, driver):
+        self.Driver = driver
+
         self.root = Tk()
         self.root.title('Home Page')
 
@@ -24,27 +26,24 @@ class FacultyHomepage:
 
         radioFrame = Frame(self.root)
         radioFrame.pack(padx=15)
-        
-        personalInfoButton = Radiobutton(self.root, text="Personal Information", variable=self.selection, value=1)
+
+        personalInfoButton = Radiobutton(self.root, text="Personal Information",
+                variable=self.selection, value=0)
         personalInfoButton.pack(anchor=W)
-        
-        facultyServicesButton = Radiobutton(self.root, text="Faculty Services", variable=self.selection, value=2)
+
+        facultyServicesButton = Radiobutton(self.root, text="Faculty Services",
+                variable=self.selection, value=1)
         facultyServicesButton.pack(anchor=W)
 
         buttonFrame = Frame(self.root)
         buttonFrame.pack(fill=X)
 
-        nextButton = Button(buttonFrame, text="Next", command=self.print_this)
+        nextButton = Button(buttonFrame, text="Next", command=self.next_step)
         nextButton.pack(side=RIGHT)
 
-        logoutButton = Button(buttonFrame, text="Logout", command=self.print_this())
-        logoutButton.pack(side=RIGHT)
-
-    # This method is just a place holder to print out the username and password
-    # values gathered from the textfields. This will not be used in the actual
-    # application
-    def print_this(self):
-        print("Hello World")
+    def next_step(self):
+        self.root.destroy()
+        self.Driver.launch_homepage_next(self.selection.get(),"instructor")
 
 if __name__=="__main__":
     app = FacultyHomepage()
