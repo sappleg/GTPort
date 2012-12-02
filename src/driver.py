@@ -21,7 +21,6 @@ class Driver:
     def launch_homepage(self,counts,login):
         if counts[0]:
             self.student.setUsername(login.getUsername())
-            print(self.student.getUsername())
             shp = StudentHomepage(self)
         elif counts[1]:
             self.faculty.setUsername(login.getUsername())

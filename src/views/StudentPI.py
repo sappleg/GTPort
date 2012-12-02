@@ -5,6 +5,7 @@ Created on Nov 12, 2012
 @author: spencer
 '''
 from tkinter import *
+import pymysql
 
 # This is a class called Login. We will be able to use this class to create
 # several instances of this view. Therefore we could have several users
@@ -27,10 +28,10 @@ class StudentPI:
         self.permAddress = StringVar()
         self.contactNumber = StringVar()
         self.email = StringVar()
-        self.tutorWilling = IntVar()
+        self.tutorWilling = IntVar(value=1)
         self.tutorCourses = []
+        self.currentTutorCourse = StringVar(self.root)
         self.tutorCoursesSelected = []
-        self.currentTutorCourse = StringVar(value="CS8781")
         self.major = StringVar(value="Aerospace Engineering")
         self.degree = StringVar(value="BS")
         self.previousEduSchool = []
@@ -43,6 +44,8 @@ class StudentPI:
         self.currentPreviousEduGradYear = StringVar()
         self.previousEduGPA = []
         self.currentPreviousEduGPA = StringVar()
+
+        self.populate(un)
 
         self.makeWindow()
         self.root.mainloop()
@@ -121,10 +124,12 @@ class StudentPI:
         tutorWillingLabel = Label(tutorWillingFrame, text="Willing to tutor? ")
         tutorWillingLabel.pack(side=LEFT)
 
-        yesRadioButton = Radiobutton(tutorWillingFrame, text="Yes", variable=self.tutorWilling,value=1)
+        yesRadioButton = Radiobutton(tutorWillingFrame, text="Yes",
+                variable=self.tutorWilling,value=0)
         yesRadioButton.pack(side=LEFT)
 
-        noRadioButton = Radiobutton(tutorWillingFrame, text="No", variable=self.tutorWilling,value=2)
+        noRadioButton = Radiobutton(tutorWillingFrame, text="No",
+                variable=self.tutorWilling,value=1)
         noRadioButton.pack(side=LEFT)
 
         tutorCoursesFrame = Frame(self.root)
@@ -133,14 +138,16 @@ class StudentPI:
         tutorCoursesLabel = Label(tutorCoursesFrame, text="If Yes, select the courses you would like to tutor for ")
         tutorCoursesLabel.pack(side=LEFT)
 
-        tutorCoursesOptionMenu = OptionMenu(tutorCoursesFrame, self.currentTutorCourse, "CS8781")
+        tutorCoursesOptionMenu = OptionMenu(tutorCoursesFrame,
+                self.currentTutorCourse, *self.tutorCourses)
         tutorCoursesOptionMenu.pack(side=LEFT)
 
-        addCourseButton = Button(tutorCoursesFrame, text="+", command=self.print_this)
+        addCourseButton = Button(tutorCoursesFrame, text="+",
+                command=self.addToSelected)
         addCourseButton.pack(side=LEFT)
 
-        tutorCoursesText = Text(tutorCoursesFrame, height=1, width=50, background="white")
-        tutorCoursesText.pack(side=LEFT)
+        self.tutorCoursesText = Text(tutorCoursesFrame, height=1, width=50, background="white")
+        self.tutorCoursesText.pack(side=LEFT)
 
         majorFrame = Frame(self.root)
         majorFrame.pack(padx=15)
@@ -198,7 +205,6 @@ class StudentPI:
         previousEduGPAEntry = Entry(previousEduFrame, textvariable = self.currentPreviousEduGPA)
         previousEduGPAEntry.grid(row=4, column=1)
 
-
         buttonFrame = Frame(self.root)
         buttonFrame.pack(fill=X)
 
@@ -208,16 +214,51 @@ class StudentPI:
         addEduButton = Button(buttonFrame, text="Add Education", command=self.print_this)
         addEduButton.pack(side=LEFT)
 
-    def populate(self):
+    def populate(self, un):
         self.db = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36", db='cs4400_Group36')
         c = self.db.cursor()
         SQL = "SELECT * FROM student WHERE username = %s"
-        c.execute(SQL, (self.username.get()))
-        counts = c.fetchall()
-        self.handleLogin(counts[0][0])
+        c.execute(SQL, un)
+        items = c.fetchall()
+        self.name.set(items[0][5])
+        self.dob.set(items[0][7])
+        if items[0][9] == 'M':
+            self.gender.set("Male")
+        else:
+            self.gender.set("Female")
+        self.address.set(items[0][3])
+        self.permAddress.set(items[0][8])
+        self.contactNumber.set(items[0][10])
+        self.email.set(items[0][6])
+
+        self.tutorCourses = self.getTutorCourse(un)
+
         c.close()
         self.db.close()
 
+    def getTutorCourse(self, un):
+        courses = []
+        self.db2 = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36", db='cs4400_Group36')
+        c = self.db2.cursor()
+        SQL = "SELECT courseCode FROM registers R, courseSection CS WHERE R.studentUsername = %s AND (R.grade = 'A' OR R.grade = 'B') AND R.sectionCRN = CS.sectionCRN"
+        c.execute(SQL, un)
+        items = c.fetchall()
+        for i in items:
+            courses.append(i[0])
+        c.close()
+        self.db2.close()
+        return courses
+
+    def addToSelected(self):
+        self.tutorCoursesSelected.append(self.currentTutorCourse.get())
+        #if (self.tutorCoursesText.get("1.0")):
+            #print("has text")
+        #else:
+            #print("no text")
+        self.tutorCoursesText.delete("1.0", END)
+        for course in self.tutorCoursesSelected:
+            self.tutorCoursesText.insert(INSERT, course)
+        print(self.tutorCoursesSelected)
 
     # This method is just a place holder to print out the username and password
     # values gathered from the textfields. This will not be used in the actual
