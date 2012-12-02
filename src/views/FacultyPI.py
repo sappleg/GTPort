@@ -5,6 +5,7 @@ Created on Nov 12, 2012
 @author: spencer
 '''
 from tkinter import *
+from tkinter.messagebox import showwarning
 import pymysql
 import datetime
 
@@ -23,22 +24,22 @@ class FacultyPI:
         self.root.title('Personal Information')
 
         self.name = StringVar()
-        self.dob = datetime.date()
+        self.dob = StringVar()
         self.gender = StringVar(value="--")
         self.address = StringVar()
         self.permAddress = StringVar()
         self.contactNumber = StringVar()
         self.email = StringVar()
+        self.researchInterests = StringVar()
         
         self.department = StringVar(value="--")
         self.position = StringVar(value="--")
-        self.course = StringVar(value="CS 7689")
-        self.section = StringVar(value="A")
-        self.researchInterests = []
-        self.currentResearchInterest = StringVar(value="DatabaseModeling")
+        self.course = StringVar(value="--")
+        self.section = StringVar(value="--")
 
         self.populate(un)
         self.makeWindow()
+ #       self.getCourses()
         self.root.mainloop()
 
     def populate(self, un):
@@ -48,8 +49,37 @@ class FacultyPI:
         SQL = "SELECT * FROM instructor WHERE username = %s"
         c.execute(SQL, un)
         items = c.fetchall()
-        self.name.set(items[0][5]
+        self.name.set(items[0][4])
+        self.dob.set(items[0][6])
+        self.address.set(items[0][3])
+        self.permAddress.set(items[0][7])
+        self.contactNumber.set(items[0][9])
+        self.email.set(items[0][5])
+        self.position.set(items[0][2])
+        if items[0][8] == "M":
+            self.gender.set("Male")
+        elif items[0][8] == "F":
+            self.gender.set("Female")
+        query = "SELECT name FROM department D, instrDept I WHERE I.instructorUsername = %s AND D.deptID = I.deptID"
+        c.execute(query, un)
+        items = c.fetchall()
+        self.department.set(items[0][0])
+        query = "SELECT S.letter, C.courseCode FROM section S, courseSection C, teaches T WHERE T.instructorUsername = %s AND C.sectionCRN = T.sectionCRN AND C.sectionCRN = S.crn"
+        c.execute(query, un)
+        items = c.fetchall()
+        self.course.set(items[0][1])
+        self.section.set(items[0][0])
+        query = "SELECT research FROM researchInterests WHERE instructorUsername = %s"
+        c.execute(query, un)
+        items = c.fetchall()
+        string = ""
+        for i in range(len(items)):
+            string += items[i][0]
+            if i != (len(items)-1):
+                string += ", "
+        self.researchInterests.set(string)
         c.close()
+        self.db.close()
         
 
     # This method is used to construct the actual view. Names of variables
@@ -126,7 +156,7 @@ class FacultyPI:
         deptLabel = Label(deptFrame, text="Department ")
         deptLabel.pack(side=LEFT)
 
-        deptOptionMenu = OptionMenu(deptFrame, self.department, "--", "AeroSpace Engineering",
+        deptOptionMenu = OptionMenu(deptFrame, self.department, "--", "Aerospace Engineering",
                                     "Biology", "Biomedical Engineering", "Computer Science",
                                     "Electrical & Computer Engineering")
         deptOptionMenu.pack(side=LEFT)
@@ -147,7 +177,7 @@ class FacultyPI:
         courseLabel = Label(courseFrame, text="Course")
         courseLabel.pack(side=LEFT)
         
-        courseOptionMenu = OptionMenu(courseFrame, self.course, "CS 7689", "CS 4400")
+        courseOptionMenu = OptionMenu(courseFrame, self.course, "--")
         courseOptionMenu.pack(side=LEFT)
         
         sectionFrame = Frame(self.root)
@@ -156,7 +186,7 @@ class FacultyPI:
         sectionLabel = Label(sectionFrame, text="Section")
         sectionLabel.pack(side=LEFT)
         
-        sectionOptionMenu = OptionMenu(sectionFrame, self.section, "A", "B", "C", "D", "E", "F")
+        sectionOptionMenu = OptionMenu(sectionFrame, self.section, "--")
         sectionOptionMenu.pack(side=LEFT)
         
         RIFrame = Frame(self.root)
@@ -165,7 +195,7 @@ class FacultyPI:
         RILabel = Label(RIFrame, text="Research Interests")
         RILabel.pack(side=LEFT)
         
-        RIEntry = Entry(RIFrame, textvariable = self.researchInterests)
+        RIEntry = Entry(RIFrame, width = 100, textvariable = self.researchInterests)
         RIEntry.pack(side=LEFT)    
 
         buttonFrame = Frame(self.root)
@@ -174,11 +204,17 @@ class FacultyPI:
         submitButton = Button(buttonFrame, text="Submit", command=self.print_this)
         submitButton.pack(side=RIGHT)
 
+##    def getCourses(self):
+##        if self.department.get() != "--":
+##            return
+##        else:
+##            showwarning("ERROR", "Please select a valid department")
+
     # This method is just a place holder to print out the username and password
     # values gathered from the textfields. This will not be used in the actual
     # application
     def print_this(self):
-        print("Hello World")
+        print(self.department.get())
 
 # This is the main method of the Login file to be used for debuggin purposes.
 # This method is used to create an instance of the Login class.

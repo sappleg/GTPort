@@ -8,12 +8,12 @@ from views.FacultyPI import FacultyPI
 from views.StudentServices import StudentServices
 from views.FacultyServices import FacultyServices
 from models.Student import Student
-#from models.Faculty import Faculty
+from models.Faculty import Faculty
 #from models.Admin import Admin
 
 class Driver:
     student = Student()
-    #faculty = Faculty()
+    faculty = Faculty()
 
     def __init__(self):
         login = Login(self)
@@ -24,6 +24,8 @@ class Driver:
             print(self.student.getUsername())
             shp = StudentHomepage(self)
         elif counts[1]:
+            self.faculty.setUsername(login.getUsername())
+            print(self.faculty.getUsername())
             fhp = FacultyHomepage(self)
         elif counts[2]:
             ahp = AdminHomepage(self)
@@ -36,7 +38,7 @@ class Driver:
                 ss = StudentServices()
         elif user_type == "instructor":
             if selection == 0:
-                fpi = FacutlyPI()
+                fpi = FacultyPI(self.faculty.getUsername())
             elif selection == 1:
                 fs = FacultyServices()
         elif user_type == "admin":
