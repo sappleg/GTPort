@@ -22,21 +22,34 @@ class FacultyPI:
 
         self.name = StringVar()
         self.dob = StringVar()
-        self.gender = StringVar(value="Male")
+        self.gender = StringVar(value="--")
         self.address = StringVar()
         self.permAddress = StringVar()
         self.contactNumber = StringVar()
         self.email = StringVar()
         
-        self.department = StringVar(value="Computer Science")
-        self.position = StringVar(value="Professor")
+        self.department = StringVar(value="--")
+        self.position = StringVar(value="--")
         self.course = StringVar(value="CS 7689")
         self.section = StringVar(value="A")
         self.researchInterests = []
         self.currentResearchInterest = StringVar(value="DatabaseModeling")
 
+        self.populate()
         self.makeWindow()
         self.root.mainloop()
+
+    def populate(self):
+        self.db = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36",
+                             db='cs4400_Group36')
+        c = self.db.cursor()
+        SQL = "SELECT * FROM instructor WHERE username = %s"
+        c.execute(SQL)
+        print("SQL Query is:")
+        for item in c:
+            print(item)
+        c.close()
+        
 
     # This method is used to construct the actual view. Names of variables
     # should be intuitive. Three frames are used to control the layout of the
@@ -67,7 +80,7 @@ class FacultyPI:
         genderLabel = Label(genderFrame, text="Gender ")
         genderLabel.pack(side=LEFT)
 
-        genderOptionMenu = OptionMenu(genderFrame, self.gender, "Male", "Female")
+        genderOptionMenu = OptionMenu(genderFrame, self.gender, "--", "Male", "Female")
         genderOptionMenu.pack(side=LEFT)
 
         addressFrame = Frame(self.root)
@@ -112,7 +125,7 @@ class FacultyPI:
         deptLabel = Label(deptFrame, text="Department ")
         deptLabel.pack(side=LEFT)
 
-        deptOptionMenu = OptionMenu(deptFrame, self.department, "AeroSpace Engineering",
+        deptOptionMenu = OptionMenu(deptFrame, self.department, "--", "AeroSpace Engineering",
                                     "Biology", "Biomedical Engineering", "Computer Science",
                                     "Electrical & Computer Engineering")
         deptOptionMenu.pack(side=LEFT)
@@ -123,7 +136,7 @@ class FacultyPI:
         posLabel = Label(posFrame, text="Position")
         posLabel.pack(side=LEFT)
         
-        posOptionMenu = OptionMenu(posFrame, self.position, "Professor", "Associate Professor",
+        posOptionMenu = OptionMenu(posFrame, self.position, "--", "Professor", "Associate Professor",
                                    "Assistant Professor")
         posOptionMenu.pack(side=LEFT)
         
