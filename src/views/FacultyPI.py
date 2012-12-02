@@ -5,6 +5,8 @@ Created on Nov 12, 2012
 @author: spencer
 '''
 from tkinter import *
+import pymysql
+import datetime
 
 # This is a class called Login. We will be able to use this class to create
 # several instances of this view. Therefore we could have several users
@@ -16,12 +18,12 @@ class FacultyPI:
     # username and password variables (specific to each instance of Login). I also
     # construct the view and run it through the computer's clock cycles (makeWindow
     # and mainloop)
-    def __init__(self):
+    def __init__(self, un):
         self.root = Tk()
         self.root.title('Personal Information')
 
         self.name = StringVar()
-        self.dob = StringVar()
+        self.dob = datetime.date()
         self.gender = StringVar(value="--")
         self.address = StringVar()
         self.permAddress = StringVar()
@@ -35,19 +37,18 @@ class FacultyPI:
         self.researchInterests = []
         self.currentResearchInterest = StringVar(value="DatabaseModeling")
 
-        self.populate()
+        self.populate(un)
         self.makeWindow()
         self.root.mainloop()
 
-    def populate(self):
+    def populate(self, un):
         self.db = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36",
                              db='cs4400_Group36')
         c = self.db.cursor()
         SQL = "SELECT * FROM instructor WHERE username = %s"
-        c.execute(SQL)
-        print("SQL Query is:")
-        for item in c:
-            print(item)
+        c.execute(SQL, un)
+        items = c.fetchall()
+        self.name.set(items[0][5]
         c.close()
         
 
