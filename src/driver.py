@@ -24,7 +24,6 @@ class Driver:
             shp = StudentHomepage(self)
         elif counts[1]:
             self.faculty.setUsername(login.getUsername())
-            print(self.faculty.getUsername())
             fhp = FacultyHomepage(self)
         elif counts[2]:
             ahp = AdminHomepage(self)
