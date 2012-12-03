@@ -13,6 +13,7 @@ from models.Admin import Admin
 from views.CreateAccount import CreateAccount
 from views.SelectDepartment import SelectDepartment
 from views.AdminReport import AdminReport
+from views.StudentReport import StudentReport
 
 class Driver:
     student = Student()
@@ -65,7 +66,7 @@ class Driver:
         print("placeholder1")
 
     def grading_pattern(self):
-        print("placeholder2")
+        gp = StudentReport(self, self.student.getUsername())
 
     def assign_grades(self):
         print("placeholder4")
