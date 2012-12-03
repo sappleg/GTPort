@@ -7,8 +7,7 @@ class SelectDepartment:
         self.root = Tk()
         self.root.title('Select Department')
 
-        self.var1 = StringVar()
-        self.var1.set("Computer Science")
+        self.dept = StringVar(value="Computer Science")
 
         self.makeWindow()
         self.root.mainloop()
@@ -21,7 +20,7 @@ class SelectDepartment:
         label2.grid(row = 1, column = 1, sticky = W)
 
 
-        listbox = OptionMenu(self.root,self.var1, "Aerospace Engineering", "Biology", "Biomedical Engineering", "Computer Science", "Electrical and Computer Engineering")
+        listbox = OptionMenu(self.root,self.dept, "Aerospace Engineering", "Biology", "Biomedical Engineering", "Computer Science", "Electrical and Computer Engineering")
         listbox.grid(row = 1, column = 1, sticky = E)
 
         button1 = Button(self.root, text = "Back", width = 10)
@@ -31,7 +30,7 @@ class SelectDepartment:
 
     def course_selection(self):
         self.root.destroy()
-        self.Driver.course_selection()
+        self.Driver.course_selection(self.dept)
 
 if __name__=='__main__':
     app = SelectDepartment()
