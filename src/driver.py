@@ -18,12 +18,12 @@ class Driver:
     def __init__(self):
         login = Login(self)
 
-    def launch_homepage(self,counts,login):
+    def launch_homepage(self,counts,username):
         if counts[0]:
-            self.student.setUsername(login.getUsername())
+            self.student.setUsername(username)
             shp = StudentHomepage(self)
         elif counts[1]:
-            self.faculty.setUsername(login.getUsername())
+            self.faculty.setUsername(username)
             fhp = FacultyHomepage(self)
         elif counts[2]:
             ahp = AdminHomepage(self)
@@ -36,7 +36,7 @@ class Driver:
                 ss = StudentServices()
         elif user_type == "instructor":
             if selection == 0:
-                fpi = FacultyPI(self.faculty.getUsername())
+                fpi = FacultyPI(self, self.faculty.getUsername())
             elif selection == 1:
                 fs = FacultyServices()
         elif user_type == "admin":

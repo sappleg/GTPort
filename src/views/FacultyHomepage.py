@@ -15,6 +15,7 @@ class FacultyHomepage:
         self.root.title('Home Page')
 
         self.selection = IntVar()
+        self.selection.set(0)
 
         self.makeWindow()
         self.root.mainloop()
