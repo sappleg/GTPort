@@ -2,13 +2,13 @@
 from tkinter import *
 import pymysql
 
-class tutorAssignments:
+class TutorAssignments:
     def __init__ (self):
         self.root = Tk()
         self.root.title('Tutor Assignments')
 
         self.var1 = StringVar()
-        self.var1.set("Danielle")
+        self.var1.set("Danielle is Pretty")
 
         self.makeWindow()
         self.root.mainloop()
@@ -20,9 +20,9 @@ class tutorAssignments:
         label1.grid(row = 4, column = 0, sticky = E)
 
 #Drop down menus
-
-        listbox = OptionMenu(self.root,self.var1, "Danielle Heady", "Jonathan Porter", "Spencer Applegate", "Noland Smith")
-        listbox.grid(row = 4, column = 1)
+        self.sName = ["--", "Danielle Heady", "Jonathan Porter", "Spencer Applegate", "Noland Smith"]
+        self.listbox = OptionMenu(self.root,self.var1, *self.sName)
+        self.listbox.grid(row = 4, column = 1)
 
 #end buttons
         button1 = Button(self.root, text = ">>", width = 3)
@@ -39,5 +39,5 @@ class tutorAssignments:
         print("Hello World")
 
 if __name__=='__main__':
-    app = tutorAssignments()
+    app = TutorAssignments()
 
