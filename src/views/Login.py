@@ -103,7 +103,7 @@ class Login:
 
             #Launches homepage in driver
             self.Driver.launch_homepage([student_count, instructor_count,
-                admin_count], self)
+                admin_count], self.username.get())
 
         else:
             showinfo("", "Login unsuccessful")
