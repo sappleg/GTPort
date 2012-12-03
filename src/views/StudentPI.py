@@ -199,6 +199,8 @@ class StudentPI:
             self.gender.set("Male")
         else:
             self.gender.set("Female")
+        self.major.set(items[0][2])
+        self.degree.set(items[0][3])
         self.address.set(items[0][4])
         self.permAddress.set(items[0][8])
         self.contactNumber.set(items[0][10])
