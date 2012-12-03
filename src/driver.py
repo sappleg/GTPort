@@ -11,6 +11,7 @@ from models.Student import Student
 from models.Faculty import Faculty
 from models.Admin import Admin
 from views.CreateAccount import CreateAccount
+from views.SelectDepartment import SelectDepartment
 
 class Driver:
     student = Student()
@@ -42,7 +43,7 @@ class Driver:
             if selection == 0:
                 spi = StudentPI(self.student.getUsername(),self)
             elif selection == 1:
-                ss = StudentServices()
+                ss = StudentServices(self)
         elif user_type == "instructor":
             if selection == 0:
                 fpi = FacultyPI(self, self.faculty.getUsername())
@@ -52,6 +53,18 @@ class Driver:
             if selection == 0:
                 print("View Adminsitrative Report")
 
+    def register_courses(self):
+        sd = SelectDepartment(self)
+
+    def find_tutors(self):
+        print("placeholder")
+        #ft = FindTutors(self)
+
+    def tutor_logbook(self):
+        print("placeholder1")
+
+    def grading_pattern(self):
+        print("placeholder2")
 
 if __name__=="__main__":
     driver = Driver()
