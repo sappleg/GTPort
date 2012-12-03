@@ -14,6 +14,7 @@ from views.CreateAccount import CreateAccount
 from views.SelectDepartment import SelectDepartment
 from views.AdminReport import AdminReport
 from views.StudentReport import StudentReport
+from views.FacultyReport import FacultyReport
 
 class Driver:
     student = Student()
@@ -68,14 +69,12 @@ class Driver:
     def grading_pattern(self):
         gp = StudentReport(self, self.student.getUsername())
 
-    def assign_grades(self):
-        print("placeholder4")
 
     def assign_tutors(self):
         print("placeholder5")
 
     def view_student_performance(self):
-        print("placeholder6")
+        sp = FacultyReport(self, self.faculty.getUsername())
 
 if __name__=="__main__":
     driver = Driver()

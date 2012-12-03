@@ -1,5 +1,6 @@
 from tkinter import *
 import pymysql
+from tkinter.messagebox import showinfo
 
 class FacultyServices:
     def __init__ (self, driver):
@@ -22,8 +23,7 @@ class FacultyServices:
         button1.grid(row = 3, column = 0)
 
     def assign_grades(self):
-        self.root.destroy()
-        self.Driver.assign_grades()
+        showinfo("ERROR","This set is not part of the required\nfunctionalities for Phase III.\nPlease make a different selection.")
 
     def update_PI(self):
         self.root.destroy()
