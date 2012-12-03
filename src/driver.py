@@ -12,6 +12,7 @@ from models.Faculty import Faculty
 from models.Admin import Admin
 from views.CreateAccount import CreateAccount
 from views.SelectDepartment import SelectDepartment
+from views.AdminReport import AdminReport
 
 class Driver:
     student = Student()
@@ -51,7 +52,7 @@ class Driver:
                 fs = FacultyServices(self)
         elif user_type == "admin":
             if selection == 0:
-                print("View Adminsitrative Report")
+                ar = AdminReport(self, self.admin.getUsername())
 
     def register_courses(self):
         sd = SelectDepartment(self)
