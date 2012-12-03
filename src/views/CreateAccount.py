@@ -5,10 +5,14 @@ Created on Nov 12, 2012
 @author: spencer
 '''
 from tkinter import *
+import pymysql
+from tkinter.messagebox import showwarning
+from tkinter.messagebox import showinfo
 
 class CreateAccount:
 
-    def __init__(self):
+    def __init__(self, driver):
+        self.Driver = driver
         self.root = Tk()
         self.root.title('Create Account')
 
@@ -56,29 +60,63 @@ class CreateAccount:
         userTypeFrame = Frame(self.root)
         userTypeFrame.pack(padx=15)
 
-        userTypeLabel = Label(userTypeFrame, text="Confirm Password: ")
+        userTypeLabel = Label(userTypeFrame, text="Account Type: ")
         userTypeLabel.pack(side=LEFT)
 
-        userTypeOptionMenu = OptionMenu(userTypeFrame, self.userType, "Student", "Instructor")
+        userTypeOptionMenu = OptionMenu(userTypeFrame, self.userType, "--", "Student", "Instructor")
         userTypeOptionMenu.pack(side=LEFT)
 
         buttonFrame = Frame(self.root)
         buttonFrame.pack(fill=X)
 
-        registerButton = Button(buttonFrame, text="Register", command=self.print_this)
+        registerButton = Button(buttonFrame, text="Register", command=self.register)
         registerButton.pack(side=RIGHT)
 
-        cancelButton = Button(buttonFrame, text="Cancel", command=usernameFrame.quit)
+        cancelButton = Button(buttonFrame, text="Cancel", command=self.cancel)
         cancelButton.pack(side=RIGHT)
 
     # This method is just a place holder to print out the username and password
     # values gathered from the textfields. This will not be used in the actual
     # application
-    def print_this(self):
-        print(self.username.get())
-        print(self.password.get())
-        print(self.confirmPassword.get())
-        print(self.userType.get())
+    def register(self):
+        if self.password.get() != self.confirmPassword.get():
+            showwarning("ERROR","Your passwords do not match.\nPlease retype and try again.")
+        elif self.userType.get() == "--":
+            showwarning("ERROR","Please select an account type.")
+        else:
+            go = 0
+            db = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36", db='cs4400_Group36')
+            c = db.cursor()
+            query = "SELECT COUNT(*) FROM user WHERE username = %s"
+            c.execute(query, self.username.get())
+            items = c.fetchall()
+            if items[0][0] > 0:
+                showwarning("ERROR","That username is already taken!\nPlease select a different username\nand try again.")
+            else:
+                query1 = "INSERT INTO user (username, password) VALUES (%s, %s)"
+                query2 = ""
+                if self.userType.get() == "Instructor":
+                    query2 = "INSERT INTO instructor (username) VALUES (%s)"
+                    counts = [0,1,0]
+                elif self.userType.get() == "Student":
+                    query2 = "INSERT INTO student (username) VALUES (%s)"
+                    counts = [1,0,0]
+                c.execute(query1, (self.username.get(), self.password.get()))
+                if query2 != "":
+                    c.execute(query2, self.username.get())
+                self.root.destroy()
+                go = 1
+            c.close()
+            db.commit()
+            db.close()
+            if go == 1:
+                showinfo("Success","Registration successful.")
+                self.Driver.launch_homepage(counts, self.username.get())
+
+
+    def cancel(self):
+        self.root.destroy()
+        self.Driver.return_login()
 
 if __name__=="__main__":
     app = CreateAccount()

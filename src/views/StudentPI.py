@@ -176,7 +176,7 @@ class StudentPI:
         self.buttonFrame.pack(fill=X)
 
         self.submitButton = Button(self.buttonFrame, text="Submit",
-                command=self.submit))
+                command=self.submit)
         self.submitButton.pack(side=RIGHT)
 
         self.addEduButton = Button(self.buttonFrame, text="Add Education",
