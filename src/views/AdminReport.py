@@ -76,7 +76,7 @@ class AdminReport:
                     gpa = 0
                 else:
                     gpa = ((x[2]*4)+(x[3]*3)+(x[4]*2)+(x[5]*1)+(x[6]*0))/(x[2]+x[3]+x[4]+x[5]+x[6])
-                x += [float(gpa)]
+                x += [float(round(gpa,2))]
             goodList = []
             for y in itemList:
                 goodList += [[y[0],y[1],y[7]]]
