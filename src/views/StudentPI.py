@@ -199,7 +199,7 @@ class StudentPI:
             self.gender.set("Male")
         else:
             self.gender.set("Female")
-        self.address.set(items[0][3])
+        self.address.set(items[0][4])
         self.permAddress.set(items[0][8])
         self.contactNumber.set(items[0][10])
         self.email.set(items[0][6])
@@ -509,17 +509,36 @@ class StudentPI:
         db4 = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj", user = "cs4400_Group36", db='cs4400_Group36')
         c = db4.cursor()
         try:
+            #put personal info update here
+            if self.name.get() == "" or self.dob.get() == "" or self.gender.get() == "" or self.address.get() == "" or self.permAddress.get() == "" or self.contactNumber.get() == "" or self.email.get() == "":
+                showwarning("ERROR","Invalid personal info submission")
+                return
+            else:
+                query = "SELECT count( *) FROM student WHERE username=%s"
+                c.execute(query, (self.username))
+                count = c.fetchall()[0][0]
+                if count == 1:
+                    query = "UPDATE student SET major=%s, degree=%s, address=%s, name=%s, email=%s, dob=%s, permAddress=%s, gender=%s, contactNum=%s WHERE username=%s"
+                    c.execute(query,
+                            (self.major.get(),self.degree.get(),self.address.get(),self.name.get(),
+                                self.email.get(),self.dob.get(),self.permAddress.get(),self.gender.get(),
+                                self.contactNumber.get(),self.username))
+                else:
+                    showwarning("ERROR","Could not find student in database")
+                    return
             for i in range(len(self.previousEduGradYear)):
-                if i == len(self.previousEduGradYear) and (self.previousEduSchool[i].get() == "" or self.previousEduMajor[i].get() == "" or self.previousEduDegree[i].get() == ""):
-                        showwarning("ERROR","Invalid previous edu submission")
+                if self.previousEduSchool[i].get() == "" or self.previousEduMajor[i].get() == "" or self.previousEduDegree[i].get() == "":
+                    showwarning("ERROR","Invalid previous edu submission")
+                    return
                 else:
                     query = "SELECT count( *) FROM eduHistory WHERE studentUsername=%s AND nameOfSchool=%s AND yearOfGrad=%s"
                     c.execute(query, (self.username,self.previousEduSchool[i].get(),self.previousEduGradYear[i].get()))
                     count = c.fetchall()[0][0]
                     if count == 1:
-                        query = "UPDATE eduHistory SET degree=%s, major=%s, gpa=%s"
+                        query = "UPDATE eduHistory SET degree=%s, major=%s, gpa=%s WHERE studentUsername=%s AND nameOfSchool=%s AND yearOfGrad=%s"
                         c.execute(query, (self.previousEduDegree[i].get(),self.previousEduMajor[i].get(),
-                        self.previousEduGPA[i].get()))
+                            self.previousEduGPA[i].get(),self.username,self.previousEduSchool[i].get(),
+                            self.previousEduGradYear[i].get()))
                     else:
                         query = "INSERT INTO eduHistory VALUES(%s,%s,%s,%s,%s,%s)"
                         c.execute(query, (self.username,self.previousEduSchool[i].get(),self.previousEduGradYear[i].get(),
