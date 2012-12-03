@@ -35,15 +35,10 @@ class StudentPI:
         self.major = StringVar(value="Aerospace Engineering")
         self.degree = StringVar(value="BS")
         self.previousEduSchool = []
-        self.currentPreviousEduSchool = StringVar()
         self.previousEduMajor = []
-        self.currentPreviousEduMajor = StringVar()
         self.previousEduDegree = []
-        self.currentPreviousEduDegree = StringVar()
         self.previousEduGradYear = []
-        self.currentPreviousEduGradYear = StringVar()
         self.previousEduGPA = []
-        self.currentPreviousEduGPA = StringVar()
 
         self.populate(un)
 
@@ -172,47 +167,22 @@ class StudentPI:
         previousEduLabel = Label(previousEduLabelFrame, text="Previous Education ")
         previousEduLabel.pack()
 
-        previousEduFrame = Frame(self.root, borderwidth=1)
-        previousEduFrame.pack()
+        self.previousEduFrame = Frame(self.root, borderwidth=1)
+        self.previousEduFrame.pack()
 
-        previousEduSchoolNameLabel = Label(previousEduFrame, text="Name of Institution Attended ")
-        previousEduSchoolNameLabel.grid(row=0, column=0)
+        self.populatePreviousEdu(0)
 
-        previousEduSchoolNameEntry = Entry(previousEduFrame, textvariable = self.currentPreviousEduSchool)
-        previousEduSchoolNameEntry.grid(row=0, column=1)
+        self.buttonFrame = Frame(self.root)
+        self.buttonFrame.pack(fill=X)
 
-        previousEduMajorLabel = Label(previousEduFrame, text="Major ")
-        previousEduMajorLabel.grid(row=1, column=0)
+        self.submitButton = Button(self.buttonFrame, text="Submit",
+                command=self.submit))
+        self.submitButton.pack(side=RIGHT)
 
-        previousEduMajorEntry = Entry(previousEduFrame, textvariable = self.currentPreviousEduMajor)
-        previousEduMajorEntry.grid(row=1, column=1)
+        self.addEduButton = Button(self.buttonFrame, text="Add Education",
+                command=self.addEdu)
+        self.addEduButton.pack(side=LEFT)
 
-        previousEduDegreeLabel = Label(previousEduFrame, text="Degree ")
-        previousEduDegreeLabel.grid(row=2, column=0)
-
-        previousEduDegreeEntry = Entry(previousEduFrame, textvariable = self.currentPreviousEduDegree)
-        previousEduDegreeEntry.grid(row=2, column=1)
-
-        previousEduGradYearLabel = Label(previousEduFrame, text="Year of graduation ")
-        previousEduGradYearLabel.grid(row=3, column=0)
-
-        previousEduGradYearEntry = Entry(previousEduFrame, textvariable = self.currentPreviousEduGradYear)
-        previousEduGradYearEntry.grid(row=3, column=1)
-
-        previousEduGPALabel = Label(previousEduFrame, text="GPA ")
-        previousEduGPALabel.grid(row=4, column=0)
-
-        previousEduGPAEntry = Entry(previousEduFrame, textvariable = self.currentPreviousEduGPA)
-        previousEduGPAEntry.grid(row=4, column=1)
-
-        buttonFrame = Frame(self.root)
-        buttonFrame.pack(fill=X)
-
-        submitButton = Button(buttonFrame, text="Submit", command=self.print_this)
-        submitButton.pack(side=RIGHT)
-
-        addEduButton = Button(buttonFrame, text="Add Education", command=self.print_this)
-        addEduButton.pack(side=LEFT)
 
     def populate(self, un):
         self.db = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36", db='cs4400_Group36')
@@ -232,6 +202,8 @@ class StudentPI:
         self.email.set(items[0][6])
 
         self.tutorCourses = self.getTutorCourse(un)
+        self.currentTutorCourse.set(self.tutorCourses[0])
+        self.getPreviousEdu(un)
 
         c.close()
         self.db.close()
@@ -243,23 +215,299 @@ class StudentPI:
         SQL = "SELECT courseCode FROM registers R, courseSection CS WHERE R.studentUsername = %s AND (R.grade = 'A' OR R.grade = 'B') AND R.sectionCRN = CS.sectionCRN"
         c.execute(SQL, un)
         items = c.fetchall()
+        courses.append("--")
         for i in items:
             courses.append(i[0])
         c.close()
         self.db2.close()
         return courses
 
+    def getPreviousEdu(self, un):
+        self.db3 = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36", db='cs4400_Group36')
+        c = self.db3.cursor()
+        SQL = "SELECT * FROM eduHistory WHERE studentUsername = %s"
+        c.execute(SQL, un)
+        items = c.fetchall()
+        for i in items:
+            tmp = StringVar(value=i[1])
+            self.previousEduSchool.append(tmp)
+            tmp = IntVar(value=i[2])
+            self.previousEduGradYear.append(tmp)
+            tmp = StringVar(value=i[3])
+            self.previousEduDegree.append(tmp)
+            tmp = StringVar(value=i[4])
+            self.previousEduMajor.append(tmp)
+            tmp = DoubleVar(value=i[5])
+            self.previousEduGPA.append(tmp)
+        tmp = StringVar(value="")
+        self.previousEduSchool.append(tmp)
+        tmp = IntVar(value="")
+        self.previousEduGradYear.append(tmp)
+        tmp = StringVar(value="")
+        self.previousEduDegree.append(tmp)
+        tmp = StringVar(value="")
+        self.previousEduMajor.append(tmp)
+        tmp = DoubleVar(value="")
+        self.previousEduGPA.append(tmp)
+        c.close()
+        self.db3.close()
+
     def addToSelected(self):
         self.tutorCoursesSelected.append(self.currentTutorCourse.get())
-        #if (self.tutorCoursesText.get("1.0")):
-            #print("has text")
-        #else:
-            #print("no text")
         self.tutorCoursesText.delete("1.0", END)
-        for course in self.tutorCoursesSelected:
-            self.tutorCoursesText.insert(INSERT, course)
-        print(self.tutorCoursesSelected)
+        string = ""
+        for i in range(len(self.tutorCoursesSelected)):
+            string += self.tutorCoursesSelected[i]
+            if i != (len(self.tutorCoursesSelected)-1):
+                string += ", "
+        self.tutorCoursesText.insert(INSERT, string)
 
+    def populatePreviousEdu(self,flag):
+        if flag:
+            size = len(self.previousEduGradYear)
+        else:
+            size = len(self.previousEduGradYear) - 1
+
+        if size == 0:
+            previousEduSchoolNameLabel = Label(self.previousEduFrame, text="Name of Institution Attended ")
+            previousEduSchoolNameLabel.grid(row=0, column=0)
+
+            previousEduSchoolNameEntry = Entry(self.previousEduFrame,
+                    textvariable = self.previousEduSchool[0])
+            previousEduSchoolNameEntry.grid(row=0, column=1)
+
+            previousEduMajorLabel = Label(self.previousEduFrame, text="Major ")
+            previousEduMajorLabel.grid(row=1, column=0)
+
+            previousEduMajorEntry = Entry(self.previousEduFrame, textvariable =
+                    self.previousEduMajor[0])
+            previousEduMajorEntry.grid(row=1, column=1)
+
+            previousEduDegreeLabel = Label(self.previousEduFrame, text="Degree ")
+            previousEduDegreeLabel.grid(row=2, column=0)
+
+            previousEduDegreeEntry = Entry(self.previousEduFrame, textvariable
+                    = self.previousEduDegree[0])
+            previousEduDegreeEntry.grid(row=2, column=1)
+
+            previousEduGradYearLabel = Label(self.previousEduFrame, text="Year of graduation ")
+            previousEduGradYearLabel.grid(row=3, column=0)
+
+            previousEduGradYearEntry = Entry(self.previousEduFrame,
+                    textvariable = self.previousEduGradYear[0])
+            previousEduGradYearEntry.grid(row=3, column=1)
+
+            previousEduGPALabel = Label(self.previousEduFrame, text="GPA ")
+            previousEduGPALabel.grid(row=4, column=0)
+
+            previousEduGPAEntry = Entry(self.previousEduFrame, textvariable =
+                    self.previousEduGPA[0])
+            previousEduGPAEntry.grid(row=4, column=1)
+        elif size == 1:
+            # first set
+            previousEduSchoolNameLabel = Label(self.previousEduFrame, text="Name of Institution Attended ")
+            previousEduSchoolNameLabel.grid(row=0, column=0)
+
+            previousEduSchoolNameEntry = Entry(self.previousEduFrame,
+                    textvariable = self.previousEduSchool[0])
+            previousEduSchoolNameEntry.grid(row=0, column=1)
+
+            previousEduMajorLabel = Label(self.previousEduFrame, text="Major ")
+            previousEduMajorLabel.grid(row=1, column=0)
+
+            previousEduMajorEntry = Entry(self.previousEduFrame, textvariable =
+                    self.previousEduMajor[0])
+            previousEduMajorEntry.grid(row=1, column=1)
+
+            previousEduDegreeLabel = Label(self.previousEduFrame, text="Degree ")
+            previousEduDegreeLabel.grid(row=2, column=0)
+
+            previousEduDegreeEntry = Entry(self.previousEduFrame, textvariable
+                    = self.previousEduDegree[0])
+            previousEduDegreeEntry.grid(row=2, column=1)
+
+            previousEduGradYearLabel = Label(self.previousEduFrame, text="Year of graduation ")
+            previousEduGradYearLabel.grid(row=3, column=0)
+
+            previousEduGradYearEntry = Entry(self.previousEduFrame,
+                    textvariable = self.previousEduGradYear[0])
+            previousEduGradYearEntry.grid(row=3, column=1)
+
+            previousEduGPALabel = Label(self.previousEduFrame, text="GPA ")
+            previousEduGPALabel.grid(row=4, column=0)
+
+            previousEduGPAEntry = Entry(self.previousEduFrame, textvariable =
+                    self.previousEduGPA[0])
+            previousEduGPAEntry.grid(row=4, column=1)
+
+            #second set
+            previousEduSchoolNameLabel1 = Label(self.previousEduFrame, text="Name of Institution Attended ")
+            previousEduSchoolNameLabel1.grid(row=5, column=0)
+
+            previousEduSchoolNameEntry1 = Entry(self.previousEduFrame,
+                    textvariable = self.previousEduSchool[1])
+            previousEduSchoolNameEntry1.grid(row=5, column=1)
+
+            previousEduMajorLabel1 = Label(self.previousEduFrame, text="Major ")
+            previousEduMajorLabel1.grid(row=6, column=0)
+
+            previousEduMajorEntry1 = Entry(self.previousEduFrame, textvariable
+                    = self.previousEduMajor[1])
+            previousEduMajorEntry1.grid(row=6, column=1)
+
+            previousEduDegreeLabel1 = Label(self.previousEduFrame, text="Degree ")
+            previousEduDegreeLabel1.grid(row=7, column=0)
+
+            previousEduDegreeEntry1 = Entry(self.previousEduFrame, textvariable
+                    = self.previousEduDegree[1])
+            previousEduDegreeEntry1.grid(row=7, column=1)
+
+            previousEduGradYearLabel1 = Label(self.previousEduFrame, text="Year of graduation ")
+            previousEduGradYearLabel1.grid(row=8, column=0)
+
+            previousEduGradYearEntry1 = Entry(self.previousEduFrame,
+                    textvariable = self.previousEduGradYear[1])
+            previousEduGradYearEntry1.grid(row=8, column=1)
+
+            previousEduGPALabel1 = Label(self.previousEduFrame, text="GPA ")
+            previousEduGPALabel1.grid(row=9, column=0)
+
+            previousEduGPAEntry1 = Entry(self.previousEduFrame, textvariable =
+                    self.previousEduGPA[1])
+            previousEduGPAEntry1.grid(row=9, column=1)
+        elif size >= 2:
+            # first set
+            previousEduSchoolNameLabel = Label(self.previousEduFrame, text="Name of Institution Attended ")
+            previousEduSchoolNameLabel.grid(row=0, column=0)
+
+            previousEduSchoolNameEntry = Entry(self.previousEduFrame,
+                    textvariable = self.previousEduSchool[0])
+            previousEduSchoolNameEntry.grid(row=0, column=1)
+
+            previousEduMajorLabel = Label(self.previousEduFrame, text="Major ")
+            previousEduMajorLabel.grid(row=1, column=0)
+
+            previousEduMajorEntry = Entry(self.previousEduFrame, textvariable =
+                    self.previousEduMajor[0])
+            previousEduMajorEntry.grid(row=1, column=1)
+
+            previousEduDegreeLabel = Label(self.previousEduFrame, text="Degree ")
+            previousEduDegreeLabel.grid(row=2, column=0)
+
+            previousEduDegreeEntry = Entry(self.previousEduFrame, textvariable
+                    = self.previousEduDegree[0])
+            previousEduDegreeEntry.grid(row=2, column=1)
+
+            previousEduGradYearLabel = Label(self.previousEduFrame, text="Year of graduation ")
+            previousEduGradYearLabel.grid(row=3, column=0)
+
+            previousEduGradYearEntry = Entry(self.previousEduFrame,
+                    textvariable = self.previousEduGradYear[0])
+            previousEduGradYearEntry.grid(row=3, column=1)
+
+            previousEduGPALabel = Label(self.previousEduFrame, text="GPA ")
+            previousEduGPALabel.grid(row=4, column=0)
+
+            previousEduGPAEntry = Entry(self.previousEduFrame, textvariable =
+                    self.previousEduGPA[0])
+            previousEduGPAEntry.grid(row=4, column=1)
+
+            #second set
+            previousEduSchoolNameLabel1 = Label(self.previousEduFrame, text="Name of Institution Attended ")
+            previousEduSchoolNameLabel1.grid(row=5, column=0)
+
+            previousEduSchoolNameEntry1 = Entry(self.previousEduFrame,
+                    textvariable = self.previousEduSchool[1])
+            previousEduSchoolNameEntry1.grid(row=5, column=1)
+
+            previousEduMajorLabel1 = Label(self.previousEduFrame, text="Major ")
+            previousEduMajorLabel1.grid(row=6, column=0)
+
+            previousEduMajorEntry1 = Entry(self.previousEduFrame, textvariable
+                    = self.previousEduMajor[1])
+            previousEduMajorEntry1.grid(row=6, column=1)
+
+            previousEduDegreeLabel1 = Label(self.previousEduFrame, text="Degree ")
+            previousEduDegreeLabel1.grid(row=7, column=0)
+
+            previousEduDegreeEntry1 = Entry(self.previousEduFrame, textvariable
+                    = self.previousEduDegree[1])
+            previousEduDegreeEntry1.grid(row=7, column=1)
+
+            previousEduGradYearLabel1 = Label(self.previousEduFrame, text="Year of graduation ")
+            previousEduGradYearLabel1.grid(row=8, column=0)
+
+            previousEduGradYearEntry1 = Entry(self.previousEduFrame,
+                    textvariable = self.previousEduGradYear[1])
+            previousEduGradYearEntry1.grid(row=8, column=1)
+
+            previousEduGPALabel1 = Label(self.previousEduFrame, text="GPA ")
+            previousEduGPALabel1.grid(row=9, column=0)
+
+            previousEduGPAEntry1 = Entry(self.previousEduFrame, textvariable =
+                    self.previousEduGPA[1])
+            previousEduGPAEntry1.grid(row=9, column=1)
+
+            # third set
+            previousEduSchoolNameLabel2 = Label(self.previousEduFrame, text="Name of Institution Attended ")
+            previousEduSchoolNameLabel2.grid(row=10, column=0)
+
+            previousEduSchoolNameEntry2 = Entry(self.previousEduFrame,
+                    textvariable = self.previousEduSchool[2])
+            previousEduSchoolNameEntry2.grid(row=10, column=1)
+
+            previousEduMajorLabel2 = Label(self.previousEduFrame, text="Major ")
+            previousEduMajorLabel2.grid(row=11, column=0)
+
+            previousEduMajorEntry2 = Entry(self.previousEduFrame, textvariable
+                    = self.previousEduMajor[2])
+            previousEduMajorEntry2.grid(row=11, column=1)
+
+            previousEduDegreeLabel2 = Label(self.previousEduFrame, text="Degree ")
+            previousEduDegreeLabel2.grid(row=12, column=0)
+
+            previousEduDegreeEntry2 = Entry(self.previousEduFrame, textvariable
+                    = self.previousEduDegree[2])
+            previousEduDegreeEntry2.grid(row=12, column=1)
+
+            previousEduGradYearLabel2 = Label(self.previousEduFrame, text="Year of graduation ")
+            previousEduGradYearLabel2.grid(row=13, column=0)
+
+            previousEduGradYearEntry2 = Entry(self.previousEduFrame,
+                    textvariable = self.previousEduGradYear[2])
+            previousEduGradYearEntry2.grid(row=13, column=1)
+
+            previousEduGPALabel2 = Label(self.previousEduFrame, text="GPA ")
+            previousEduGPALabel2.grid(row=14, column=0)
+
+            previousEduGPAEntry2 = Entry(self.previousEduFrame, textvariable =
+                    self.previousEduGPA[2])
+            previousEduGPAEntry2.grid(row=14, column=1)
+
+    def addEdu(self):
+        if len(self.previousEduGradYear) > 3:
+            return
+
+        self.previousEduFrame.pack_forget()
+        self.buttonFrame.pack_forget()
+
+        tmp = StringVar(value="")
+        self.previousEduSchool.append(tmp)
+        tmp = IntVar(value="")
+        self.previousEduGradYear.append(tmp)
+        tmp = StringVar(value="")
+        self.previousEduDegree.append(tmp)
+        tmp = StringVar(value="")
+        self.previousEduMajor.append(tmp)
+        tmp = DoubleVar(value="")
+        self.previousEduGPA.append(tmp)
+
+        self.previousEduFrame.pack()
+        self.buttonFrame.pack(fill=X)
+        self.populatePreviousEdu(1)
+
+    def submit(self):
+        print("hello world")
     # This method is just a place holder to print out the username and password
     # values gathered from the textfields. This will not be used in the actual
     # application
