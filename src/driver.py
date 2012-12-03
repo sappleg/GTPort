@@ -48,7 +48,7 @@ class Driver:
             if selection == 0:
                 fpi = FacultyPI(self, self.faculty.getUsername())
             elif selection == 1:
-                fs = FacultyServices()
+                fs = FacultyServices(self)
         elif user_type == "admin":
             if selection == 0:
                 print("View Adminsitrative Report")
@@ -65,6 +65,15 @@ class Driver:
 
     def grading_pattern(self):
         print("placeholder2")
+
+    def assign_grades(self):
+        print("placeholder4")
+
+    def assign_tutors(self):
+        print("placeholder5")
+
+    def view_student_performance(self):
+        print("placeholder6")
 
 if __name__=="__main__":
     driver = Driver()
