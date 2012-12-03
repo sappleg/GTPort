@@ -9,12 +9,13 @@ from views.StudentServices import StudentServices
 from views.FacultyServices import FacultyServices
 from models.Student import Student
 from models.Faculty import Faculty
-#from models.Admin import Admin
+from models.Admin import Admin
 from views.CreateAccount import CreateAccount
 
 class Driver:
     student = Student()
     faculty = Faculty()
+    admin = Admin()
 
     def __init__(self):
         login = Login(self)
@@ -33,6 +34,7 @@ class Driver:
             self.faculty.setUsername(username)
             fhp = FacultyHomepage(self)
         elif counts[2]:
+            self.admin.setUsername(username)
             ahp = AdminHomepage(self)
 
     def launch_homepage_next(self,selection,user_type):
@@ -49,8 +51,7 @@ class Driver:
         elif user_type == "admin":
             if selection == 0:
                 print("View Adminsitrative Report")
-            elif selection == 1:
-                print("Add New Course")
+
 
 if __name__=="__main__":
     driver = Driver()
