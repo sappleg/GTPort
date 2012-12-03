@@ -40,7 +40,7 @@ class Driver:
     def launch_homepage_next(self,selection,user_type):
         if user_type == "student":
             if selection == 0:
-                spi = StudentPI(self.student.getUsername())
+                spi = StudentPI(self.student.getUsername(),self)
             elif selection == 1:
                 ss = StudentServices()
         elif user_type == "instructor":
