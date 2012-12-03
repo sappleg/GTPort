@@ -5,6 +5,7 @@ Created on Nov 12, 2012
 @author: spencer
 '''
 from tkinter import *
+from tkinter.messagebox import showinfo
 
 class AdminHomepage:
 
@@ -42,8 +43,12 @@ class AdminHomepage:
         nextButton.pack(side=RIGHT)
 
     def next_step(self):
-        self.root.destroy()
-        self.Driver.launch_homepage_next(self.selection.get(),"admin")
+        if self.selection.get() == 0:
+            self.root.destroy()
+            self.Driver.launch_homepage_next(self.selection.get(),"admin")
+        elif self.selection.get() == 1:
+            showinfo("ERROR","This set is not part of the required\nfunctionalities for Phase III.\nPlease make a different selection.")
+            self.selection.set(0)
 
 if __name__=="__main__":
     app = AdminHomepage()
