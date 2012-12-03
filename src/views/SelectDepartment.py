@@ -1,9 +1,9 @@
-
 from tkinter import *
 import pymysql
 
-class selectDepartment:
-    def __init__ (self):
+class SelectDepartment:
+    def __init__ (self, driver):
+        self.Driver = driver
         self.root = Tk()
         self.root.title('Select Department')
         
@@ -35,5 +35,3 @@ class selectDepartment:
 
 if __name__=='__main__':
     app = selectDepartment()
-
-
