@@ -20,7 +20,7 @@ class SelectDepartment:
         label2.grid(row = 1, column = 1, sticky = W)
 
 
-        listbox = OptionMenu(self.root,self.dept, "Aerospace Engineering", "Biology", "Biomedical Engineering", "Computer Science", "Electrical and Computer Engineering")
+        listbox = OptionMenu(self.root,self.dept, "Aerospace Engineering", "Biology", "Biomedical Engineering", "Computer Science", "Electrical & Computer Engineering")
         listbox.grid(row = 1, column = 1, sticky = E)
 
         button1 = Button(self.root, text = "Back", width = 10)
