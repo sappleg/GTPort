@@ -170,16 +170,19 @@ class StudentPI:
         self.previousEduFrame = Frame(self.root, borderwidth=1)
         self.previousEduFrame.pack()
 
-        self.populatePreviousEdu()
+        self.populatePreviousEdu(0)
 
-        buttonFrame = Frame(self.root)
-        buttonFrame.pack(fill=X)
+        self.buttonFrame = Frame(self.root)
+        self.buttonFrame.pack(fill=X)
 
-        submitButton = Button(buttonFrame, text="Submit", command=self.print_this)
-        submitButton.pack(side=RIGHT)
+        self.submitButton = Button(self.buttonFrame, text="Submit",
+                command=self.submit))
+        self.submitButton.pack(side=RIGHT)
 
-        addEduButton = Button(buttonFrame, text="Add Education", command=self.print_this)
-        addEduButton.pack(side=LEFT)
+        self.addEduButton = Button(self.buttonFrame, text="Add Education",
+                command=self.addEdu)
+        self.addEduButton.pack(side=LEFT)
+
 
     def populate(self, un):
         self.db = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36", db='cs4400_Group36')
@@ -199,6 +202,7 @@ class StudentPI:
         self.email.set(items[0][6])
 
         self.tutorCourses = self.getTutorCourse(un)
+        self.currentTutorCourse.set(self.tutorCourses[0])
         self.getPreviousEdu(un)
 
         c.close()
@@ -211,7 +215,7 @@ class StudentPI:
         SQL = "SELECT courseCode FROM registers R, courseSection CS WHERE R.studentUsername = %s AND (R.grade = 'A' OR R.grade = 'B') AND R.sectionCRN = CS.sectionCRN"
         c.execute(SQL, un)
         items = c.fetchall()
-        self.currentTutorCourse.set(items[0][0])
+        courses.append("--")
         for i in items:
             courses.append(i[0])
         c.close()
@@ -235,11 +239,16 @@ class StudentPI:
             self.previousEduMajor.append(tmp)
             tmp = DoubleVar(value=i[5])
             self.previousEduGPA.append(tmp)
-        self.previousEduSchool.append(StringVar())
-        self.previousEduGradYear.append(IntVar())
-        self.previousEduDegree.append(StringVar())
-        self.previousEduMajor.append(StringVar())
-        self.previousEduGPA.append(DoubleVar())
+        tmp = StringVar(value="")
+        self.previousEduSchool.append(tmp)
+        tmp = IntVar(value="")
+        self.previousEduGradYear.append(tmp)
+        tmp = StringVar(value="")
+        self.previousEduDegree.append(tmp)
+        tmp = StringVar(value="")
+        self.previousEduMajor.append(tmp)
+        tmp = DoubleVar(value="")
+        self.previousEduGPA.append(tmp)
         c.close()
         self.db3.close()
 
@@ -253,10 +262,13 @@ class StudentPI:
                 string += ", "
         self.tutorCoursesText.insert(INSERT, string)
 
-    def populatePreviousEdu(self):
-        size = len(self.previousEduGradYear)
+    def populatePreviousEdu(self,flag):
+        if flag:
+            size = len(self.previousEduGradYear)
+        else:
+            size = len(self.previousEduGradYear) - 1
+
         if size == 0:
-        #for i in range(len(self.previousEduGradYear)):
             previousEduSchoolNameLabel = Label(self.previousEduFrame, text="Name of Institution Attended ")
             previousEduSchoolNameLabel.grid(row=0, column=0)
 
@@ -472,7 +484,30 @@ class StudentPI:
                     self.previousEduGPA[2])
             previousEduGPAEntry2.grid(row=14, column=1)
 
+    def addEdu(self):
+        if len(self.previousEduGradYear) > 3:
+            return
 
+        self.previousEduFrame.pack_forget()
+        self.buttonFrame.pack_forget()
+
+        tmp = StringVar(value="")
+        self.previousEduSchool.append(tmp)
+        tmp = IntVar(value="")
+        self.previousEduGradYear.append(tmp)
+        tmp = StringVar(value="")
+        self.previousEduDegree.append(tmp)
+        tmp = StringVar(value="")
+        self.previousEduMajor.append(tmp)
+        tmp = DoubleVar(value="")
+        self.previousEduGPA.append(tmp)
+
+        self.previousEduFrame.pack()
+        self.buttonFrame.pack(fill=X)
+        self.populatePreviousEdu(1)
+
+    def submit(self):
+        print("hello world")
     # This method is just a place holder to print out the username and password
     # values gathered from the textfields. This will not be used in the actual
     # application
