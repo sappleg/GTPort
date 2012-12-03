@@ -26,12 +26,12 @@ class SelectDepartment:
 
         button1 = Button(self.root, text = "Back", width = 10)
         button1.grid(row = 2, column = 0)
-        button2 = Button(self.root, text = "Next", width = 10, command = self.print_statement)
+        button2 = Button(self.root, text = "Next", width = 10, command = self.course_selection)
         button2.grid(row = 2, column = 2)
 
-    def print_statement(self):
-        print(self.var1.get())
-        print("Hello World")
+    def course_selection(self):
+        self.root.destroy()
+        self.Driver.course_selection()
 
 if __name__=='__main__':
     app = SelectDepartment()

@@ -16,6 +16,7 @@ from views.AdminReport import AdminReport
 from views.StudentReport import StudentReport
 from views.FacultyReport import FacultyReport
 from views.TutorAssignments import TutorAssignments
+from views.CourseSelection import CourseSelection
 
 class Driver:
     student = Student()
@@ -75,6 +76,9 @@ class Driver:
 
     def view_student_performance(self):
         sp = FacultyReport(self, self.faculty.getUsername())
+
+    def course_selection(self):
+        cs = CourseSelection(self, self.student.getUsername())
 
 if __name__=="__main__":
     driver = Driver()
