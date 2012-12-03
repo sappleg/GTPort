@@ -18,7 +18,8 @@ class StudentPI:
     # username and password variables (specific to each instance of Login). I also
     # construct the view and run it through the computer's clock cycles (makeWindow
     # and mainloop)
-    def __init__(self, un):
+    def __init__(self, un, driver):
+        self.Driver = driver
         self.username = un
         self.root = Tk()
         self.root.title('Personal Information')
@@ -509,7 +510,7 @@ class StudentPI:
         c = db4.cursor()
         try:
             for i in range(len(self.previousEduGradYear)):
-                if self.previousEduSchool[i].get() == "" or self.previousEduMajor[i].get() == "" or self.previousEduDegree[i].get() == "":
+                if i == len(self.previousEduGradYear) and (self.previousEduSchool[i].get() == "" or self.previousEduMajor[i].get() == "" or self.previousEduDegree[i].get() == ""):
                         showwarning("ERROR","Invalid previous edu submission")
                 else:
                     query = "SELECT count( *) FROM eduHistory WHERE studentUsername=%s AND nameOfSchool=%s AND yearOfGrad=%s"
@@ -525,10 +526,12 @@ class StudentPI:
                         self.previousEduDegree[i].get(),self.previousEduMajor[i].get(),
                         self.previousEduGPA[i].get()))
         except:
-            print("except")
+            showwarning("ERROR","Something went wrong")
         c.close()
         db4.commit()
         db4.close()
+        self.root.destroy()
+        self.Driver.launch_homepage([1,0,0],self.username)
 
     # This method is just a place holder to print out the username and password
     # values gathered from the textfields. This will not be used in the actual
