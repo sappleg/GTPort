@@ -16,7 +16,9 @@ class StudentServices:
     # username and password variables (specific to each instance of Login). I also
     # construct the view and run it through the computer's clock cycles (makeWindow
     # and mainloop)
-    def __init__(self):
+    def __init__(self,driver):
+        self.Driver = driver
+
         self.root = Tk()
         self.root.title('Student Services')
 
@@ -31,20 +33,40 @@ class StudentServices:
         buttonFrame = Frame(self.root)
         buttonFrame.pack(side=BOTTOM)
 
-        registerButton = Button(buttonFrame, text="Register for Courses", command=self.print_this)
-        registerButton.pack(side=BOTTOM)
+        registerButton = Button(buttonFrame, text="Register for Courses", command=self.register_for_courses)
+        registerButton.pack(side=TOP)
 
-        updatePIButton = Button(buttonFrame, text="Update Personal Information", command=self.print_this)
-        updatePIButton.pack(side=BOTTOM)
+        updatePIButton = Button(buttonFrame, text="Update Personal Information", command=self.update_PI)
+        updatePIButton.pack(side=TOP)
 
-        findTutorsButton = Button(buttonFrame, text="Find Tutors", command=self.print_this)
-        findTutorsButton.pack(side=BOTTOM)
+        findTutorsButton = Button(buttonFrame, text="Find Tutors", command=self.find_tutors)
+        findTutorsButton.pack(side=TOP)
 
-        tutorLBButton = Button(buttonFrame, text="Tutor Logbook", command=self.print_this)
-        tutorLBButton.pack(side=BOTTOM)
+        tutorLBButton = Button(buttonFrame, text="Tutor Logbook", command=self.tutor_logbook)
+        tutorLBButton.pack(side=TOP)
 
-        gradePatternButton = Button(buttonFrame, text="View Grading Pattern", command=self.print_this)
-        gradePatternButton.pack(side=BOTTOM)
+        gradePatternButton = Button(buttonFrame, text="View Grading Pattern", command=self.grading_pattern)
+        gradePatternButton.pack(side=TOP)
+
+    def register_for_courses(self):
+        self.root.destroy()
+        self.Driver.register_courses()
+
+    def update_PI(self):
+        self.root.destroy()
+        self.Driver.launch_homepage_next(0,"student")
+
+    def find_tutors(self):
+        self.root.destroy()
+        self.Driver.find_tutors()
+
+    def tutor_logbook(self):
+        self.root.destroy()
+        self.Driver.tutor_logbook()
+
+    def grading_pattern(self):
+        self.root.destroy()
+        self.Driver.grading_pattern()
 
     # This method is just a place holder to print out the username and password
     # values gathered from the textfields. This will not be used in the actual
