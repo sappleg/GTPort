@@ -2,8 +2,10 @@
 from tkinter import *
 import pymysql
 
-class registrationComplete:
-    def __init__ (self):
+class RegistrationComplete:
+    def __init__ (self,driver):
+        self.Driver = driver
+
         self.root = Tk()
         self.root.title('Registration Complete')
 
@@ -42,5 +44,4 @@ class registrationComplete:
         print("Hello World")
 
 if __name__=='__main__':
-    app = registrationComplete()
-
+    app = RegistrationComplete()
