@@ -6,7 +6,7 @@ class SelectDepartment:
         self.Driver = driver
         self.root = Tk()
         self.root.title('Select Department')
-        
+
         self.var1 = StringVar()
         self.var1.set("Computer Science")
 
@@ -14,7 +14,7 @@ class SelectDepartment:
         self.root.mainloop()
 
     def makeWindow(self):
-        
+
         label1 = Label(self.root, text = "Term:        Fall 2012")
         label1.grid(row = 0, column = 1, sticky = W)
         label2 = Label(self.root, text = "Department")
@@ -34,4 +34,4 @@ class SelectDepartment:
         print("Hello World")
 
 if __name__=='__main__':
-    app = selectDepartment()
+    app = SelectDepartment()
