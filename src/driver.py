@@ -10,12 +10,19 @@ from views.FacultyServices import FacultyServices
 from models.Student import Student
 from models.Faculty import Faculty
 #from models.Admin import Admin
+from views.CreateAccount import CreateAccount
 
 class Driver:
     student = Student()
     faculty = Faculty()
 
     def __init__(self):
+        login = Login(self)
+
+    def create_account(self):
+        ca = CreateAccount(self)
+
+    def return_login(self):
         login = Login(self)
 
     def launch_homepage(self,counts,username):

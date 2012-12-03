@@ -60,8 +60,12 @@ class Login:
         loginButton = Button(buttonFrame, text="Login", command=self.login)
         loginButton.pack(side=RIGHT)
 
-        createAccountButton = Button(buttonFrame, text="Create Account")
+        createAccountButton = Button(buttonFrame, text="Create Account", command=self.createAccount)
         createAccountButton.pack(side=RIGHT)
+
+    def createAccount(self):
+        self.root.destroy()
+        self.Driver.create_account()
 
     def login(self):
         if self.username.get() == "" or self.password.get() == "":
