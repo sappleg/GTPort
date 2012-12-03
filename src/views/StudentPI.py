@@ -5,6 +5,7 @@ Created on Nov 12, 2012
 @author: spencer
 '''
 from tkinter import *
+from tkinter.messagebox import showwarning
 import pymysql
 
 # This is a class called Login. We will be able to use this class to create
@@ -18,6 +19,7 @@ class StudentPI:
     # construct the view and run it through the computer's clock cycles (makeWindow
     # and mainloop)
     def __init__(self, un):
+        self.username = un
         self.root = Tk()
         self.root.title('Personal Information')
 
@@ -40,7 +42,7 @@ class StudentPI:
         self.previousEduGradYear = []
         self.previousEduGPA = []
 
-        self.populate(un)
+        self.populate()
 
         self.makeWindow()
         self.root.mainloop()
@@ -184,11 +186,11 @@ class StudentPI:
         self.addEduButton.pack(side=LEFT)
 
 
-    def populate(self, un):
+    def populate(self):
         self.db = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36", db='cs4400_Group36')
         c = self.db.cursor()
         SQL = "SELECT * FROM student WHERE username = %s"
-        c.execute(SQL, un)
+        c.execute(SQL, self.username)
         items = c.fetchall()
         self.name.set(items[0][5])
         self.dob.set(items[0][7])
@@ -201,19 +203,19 @@ class StudentPI:
         self.contactNumber.set(items[0][10])
         self.email.set(items[0][6])
 
-        self.tutorCourses = self.getTutorCourse(un)
+        self.tutorCourses = self.getTutorCourse()
         self.currentTutorCourse.set(self.tutorCourses[0])
-        self.getPreviousEdu(un)
+        self.getPreviousEdu()
 
         c.close()
         self.db.close()
 
-    def getTutorCourse(self, un):
+    def getTutorCourse(self):
         courses = []
         self.db2 = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36", db='cs4400_Group36')
         c = self.db2.cursor()
         SQL = "SELECT courseCode FROM registers R, courseSection CS WHERE R.studentUsername = %s AND (R.grade = 'A' OR R.grade = 'B') AND R.sectionCRN = CS.sectionCRN"
-        c.execute(SQL, un)
+        c.execute(SQL, self.username)
         items = c.fetchall()
         courses.append("--")
         for i in items:
@@ -222,11 +224,11 @@ class StudentPI:
         self.db2.close()
         return courses
 
-    def getPreviousEdu(self, un):
+    def getPreviousEdu(self):
         self.db3 = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36", db='cs4400_Group36')
         c = self.db3.cursor()
         SQL = "SELECT * FROM eduHistory WHERE studentUsername = %s"
-        c.execute(SQL, un)
+        c.execute(SQL, self.username)
         items = c.fetchall()
         for i in items:
             tmp = StringVar(value=i[1])
@@ -241,13 +243,13 @@ class StudentPI:
             self.previousEduGPA.append(tmp)
         tmp = StringVar(value="")
         self.previousEduSchool.append(tmp)
-        tmp = IntVar(value="")
+        tmp = IntVar(value=0)
         self.previousEduGradYear.append(tmp)
         tmp = StringVar(value="")
         self.previousEduDegree.append(tmp)
         tmp = StringVar(value="")
         self.previousEduMajor.append(tmp)
-        tmp = DoubleVar(value="")
+        tmp = DoubleVar(value=0.0)
         self.previousEduGPA.append(tmp)
         c.close()
         self.db3.close()
@@ -263,11 +265,7 @@ class StudentPI:
         self.tutorCoursesText.insert(INSERT, string)
 
     def populatePreviousEdu(self,flag):
-        if flag:
-            size = len(self.previousEduGradYear)
-        else:
-            size = len(self.previousEduGradYear) - 1
-
+        size = len(self.previousEduGradYear) - 1
         if size == 0:
             previousEduSchoolNameLabel = Label(self.previousEduFrame, text="Name of Institution Attended ")
             previousEduSchoolNameLabel.grid(row=0, column=0)
@@ -485,7 +483,7 @@ class StudentPI:
             previousEduGPAEntry2.grid(row=14, column=1)
 
     def addEdu(self):
-        if len(self.previousEduGradYear) > 3:
+        if len(self.previousEduGradYear) > 2:
             return
 
         self.previousEduFrame.pack_forget()
@@ -507,7 +505,31 @@ class StudentPI:
         self.populatePreviousEdu(1)
 
     def submit(self):
-        print("hello world")
+        db4 = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj", user = "cs4400_Group36", db='cs4400_Group36')
+        c = db4.cursor()
+        try:
+            for i in range(len(self.previousEduGradYear)):
+                if self.previousEduSchool[i].get() == "" or self.previousEduMajor[i].get() == "" or self.previousEduDegree[i].get() == "":
+                        showwarning("ERROR","Invalid previous edu submission")
+                else:
+                    query = "SELECT count( *) FROM eduHistory WHERE studentUsername=%s AND nameOfSchool=%s AND yearOfGrad=%s"
+                    c.execute(query, (self.username,self.previousEduSchool[i].get(),self.previousEduGradYear[i].get()))
+                    count = c.fetchall()[0][0]
+                    if count == 1:
+                        query = "UPDATE eduHistory SET degree=%s, major=%s, gpa=%s"
+                        c.execute(query, (self.previousEduDegree[i].get(),self.previousEduMajor[i].get(),
+                        self.previousEduGPA[i].get()))
+                    else:
+                        query = "INSERT INTO eduHistory VALUES(%s,%s,%s,%s,%s,%s)"
+                        c.execute(query, (self.username,self.previousEduSchool[i].get(),self.previousEduGradYear[i].get(),
+                        self.previousEduDegree[i].get(),self.previousEduMajor[i].get(),
+                        self.previousEduGPA[i].get()))
+        except:
+            print("except")
+        c.close()
+        db4.commit()
+        db4.close()
+
     # This method is just a place holder to print out the username and password
     # values gathered from the textfields. This will not be used in the actual
     # application
