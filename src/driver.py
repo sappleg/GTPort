@@ -19,6 +19,7 @@ from views.TutorAssignments import TutorAssignments
 from views.CourseSelection import CourseSelection
 from views.RegistrationComplete import RegistrationComplete
 from views.FindTutors import FindTutors
+from views.TutorLogbook import TutorLogbook
 
 class Driver:
     student = Student()
@@ -67,7 +68,7 @@ class Driver:
         ft = FindTutors(self, self.student.getUsername())
 
     def tutor_logbook(self):
-        print("placeholder1")
+        tl = TutorLogbook (self, self.student.getUsername())
 
     def grading_pattern(self):
         gp = StudentReport(self, self.student.getUsername())
