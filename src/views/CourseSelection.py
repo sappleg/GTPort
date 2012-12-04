@@ -144,7 +144,7 @@ class CourseSelection:
         db3.close()
 
         self.root.destroy()
-        self.Driver.registration_complete()
+        self.Driver.registration_complete(self.username)
 
 if __name__=='__main__':
     app = courseSelection()
