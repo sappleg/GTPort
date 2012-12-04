@@ -67,11 +67,11 @@ class FacultyReport:
                 y += [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
                 itemList += [y]
             for i in itemList:
-                queryA = "SELECT R.grade, R.studentUsername, R.sectionCRN FROM registers R, courseSection C WHERE R.sectionCRN = C.sectionCRN AND C.courseTitle = %s AND R.grade NOT LIKE 'NULL'"
+                queryA = "SELECT R.grade, R.studentUsername, C.courseTitle FROM registers R, courseSection C WHERE R.sectionCRN = C.sectionCRN AND C.courseTitle = %s AND R.grade NOT LIKE 'NULL'"
                 c.execute(queryA, i[1])
                 a = c.fetchall()
                 for b in a:
-                    queryB = "SELECT COUNT(*) FROM tutorLog WHERE studentUsername = %s AND sectionCRN = %s"
+                    queryB = "SELECT COUNT(*) FROM tutorLog WHERE studentUsername = %s AND courseTitle = %s"
                     c.execute(queryB, (b[1],b[2]))
                     finalItems = c.fetchall()
                     for m in finalItems:
