@@ -82,8 +82,8 @@ class Driver:
     def course_selection(self,dept):
         cs = CourseSelection(self, self.student.getUsername(),dept)
 
-    def registration_complete(self):
-        rc = RegistrationComplete(self)
+    def registration_complete(self,username):
+        rc = RegistrationComplete(self,username)
 
 if __name__=="__main__":
     driver = Driver()

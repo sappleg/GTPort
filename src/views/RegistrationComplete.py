@@ -3,8 +3,9 @@ from tkinter import *
 import pymysql
 
 class RegistrationComplete:
-    def __init__ (self,driver):
+    def __init__ (self,driver,un):
         self.Driver = driver
+        self.username = un
 
         self.root = Tk()
         self.root.title('Registration Complete')
@@ -35,13 +36,13 @@ class RegistrationComplete:
         label9 = Label(self.root, text = "Registered")
         label9.grid(row = 2, column = 3)       
 
-        button1 = Button(self.root, text = "Go To Homepage", width = 20)
+        button1 = Button(self.root, text = "Go To Homepage", width = 20, command=self.homepage)
         button1.grid(row = 4, column = 3)
  
 
-    def print_statement(self):
-        print(self.var1.get())
-        print("Hello World")
+    def homepage(self):
+        self.root.destroy()
+        self.Driver.launch_homepage([1,0,0],self.username)
 
 if __name__=='__main__':
     app = RegistrationComplete()
