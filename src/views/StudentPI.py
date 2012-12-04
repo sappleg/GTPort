@@ -148,6 +148,10 @@ class StudentPI:
         self.tutorCoursesText = Text(tutorCoursesFrame, height=1, width=50, background="white")
         self.tutorCoursesText.pack(side=LEFT)
 
+        removeCoursesButton = Button(tutorCoursesFrame, text="Delete",
+                command=self.removeFromSelected)
+        removeCoursesButton.pack(side=LEFT)
+
         majorFrame = Frame(self.root)
         majorFrame.pack(padx=15)
 
@@ -259,7 +263,10 @@ class StudentPI:
         self.db3.close()
 
     def addToSelected(self):
-        self.tutorCoursesSelected.append(self.currentTutorCourse.get())
+        if self.currentTutorCourse.get() == "--":
+            return
+        else:
+            self.tutorCoursesSelected.append(self.currentTutorCourse.get())
         self.tutorCoursesText.delete("1.0", END)
         string = ""
         for i in range(len(self.tutorCoursesSelected)):
@@ -529,6 +536,28 @@ class StudentPI:
                 else:
                     showwarning("ERROR","Could not find student in database")
                     return
+
+            for course in self.tutorCoursesSelected:
+                query = """SELECT courseTitle FROM courseSection
+                WHERE courseCode=%s"""
+                c.execute(query, (course))
+                course_title = c.fetchall()[0][0]
+                query = """SELECT count( *) FROM tutorsFor WHERE tutorUsername=%s
+                AND courseTitle=%s"""
+                c.execute(query, (self.username, course_title))
+                count1 = c.fetchall()[0][0]
+                query = """SELECT count( *) FROM appliesForTutor WHERE studentUsername=%s
+                AND courseTitle=%s"""
+                c.execute(query, (self.username, course_title))
+                count2 = c.fetchall()[0][0]
+                if count1 == 1 or count2 == 1:
+                    showwarning("ERROR","You cannot register to tutor for " +
+                            course_title)
+                    return
+                else:
+                    query = """INSERT INTO appliesForTutor VALUES(%s,%s)"""
+                    c.execute(query, (self.username, course_title))
+
             for i in range(len(self.previousEduGradYear)):
                 if self.previousEduSchool[i].get() == "" or self.previousEduMajor[i].get() == "" or self.previousEduDegree[i].get() == "":
                     #showwarning("ERROR","Invalid previous edu submission")
@@ -556,6 +585,10 @@ class StudentPI:
         db4.close()
         self.root.destroy()
         self.Driver.launch_homepage([1,0,0],self.username)
+
+    def removeFromSelected(self):
+        del self.tutorCoursesSelected[:]
+        self.tutorCoursesText.delete("1.0", END)
 
     # This method is just a place holder to print out the username and password
     # values gathered from the textfields. This will not be used in the actual
