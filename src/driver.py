@@ -18,6 +18,7 @@ from views.FacultyReport import FacultyReport
 from views.TutorAssignments import TutorAssignments
 from views.CourseSelection import CourseSelection
 from views.RegistrationComplete import RegistrationComplete
+from views.FindTutors import FindTutors
 
 class Driver:
     student = Student()
@@ -63,8 +64,7 @@ class Driver:
         sd = SelectDepartment(self)
 
     def find_tutors(self):
-        print("placeholder")
-        #ft = FindTutors(self)
+        ft = FindTutors(self, self.student.getUsername())
 
     def tutor_logbook(self):
         print("placeholder1")
