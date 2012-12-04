@@ -6,6 +6,7 @@ Created on Nov 12, 2012
 '''
 from tkinter import *
 from tkinter.messagebox import showwarning
+from tkinter.messagebox import showinfo
 import pymysql
 
 # This is a class called Login. We will be able to use this class to create
@@ -530,8 +531,9 @@ class StudentPI:
                     return
             for i in range(len(self.previousEduGradYear)):
                 if self.previousEduSchool[i].get() == "" or self.previousEduMajor[i].get() == "" or self.previousEduDegree[i].get() == "":
-                    showwarning("ERROR","Invalid previous edu submission")
-                    return
+                    #showwarning("ERROR","Invalid previous edu submission")
+                    #return
+                    break
                 else:
                     query = "SELECT count( *) FROM eduHistory WHERE studentUsername=%s AND nameOfSchool=%s AND yearOfGrad=%s"
                     c.execute(query, (self.username,self.previousEduSchool[i].get(),self.previousEduGradYear[i].get()))
@@ -546,6 +548,7 @@ class StudentPI:
                         c.execute(query, (self.username,self.previousEduSchool[i].get(),self.previousEduGradYear[i].get(),
                         self.previousEduDegree[i].get(),self.previousEduMajor[i].get(),
                         self.previousEduGPA[i].get()))
+            showinfo("Success", "You successfully updated your information")
         except:
             showwarning("ERROR","Something went wrong")
         c.close()
