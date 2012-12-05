@@ -51,7 +51,8 @@ class Login:
         passwordLabel = Label(passwordFrame, text="Password: ")
         passwordLabel.pack(side=LEFT)
 
-        passwordEntry = Entry(passwordFrame, textvariable = self.password)
+        passwordEntry = Entry(passwordFrame, textvariable = self.password,
+                show="*")
         passwordEntry.pack(side=LEFT, padx=10)
 
         buttonFrame = Frame(self.root)

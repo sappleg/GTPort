@@ -5,6 +5,8 @@ Created on Nov 12, 2012
 @author: spencer
 '''
 from tkinter import *
+from tkinter.messagebox import showwarning
+import pymysql
 
 # This is a class called Login. We will be able to use this class to create
 # several instances of this view. Therefore we could have several users
@@ -16,8 +18,9 @@ class StudentServices:
     # username and password variables (specific to each instance of Login). I also
     # construct the view and run it through the computer's clock cycles (makeWindow
     # and mainloop)
-    def __init__(self,driver):
+    def __init__(self,driver, un):
         self.Driver = driver
+        self.username = un
 
         self.root = Tk()
         self.root.title('Student Services')
@@ -61,8 +64,20 @@ class StudentServices:
         self.Driver.find_tutors()
 
     def tutor_logbook(self):
-        self.root.destroy()
-        self.Driver.tutor_logbook()
+        self.db = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36", db='cs4400_Group36')
+        c = self.db.cursor()
+        SQL = "SELECT count( *) FROM tutorsFor WHERE tutorUsername = %s"
+        c.execute(SQL, self.username)
+        counts = c.fetchall()[0][0]
+        c.close()
+        self.db.close()
+        if (counts == 0):
+            showwarning("ERROR", "You are not a tutor!")
+            return
+        else:
+            self.root.destroy()
+            self.Driver.tutor_logbook()
+
 
     def grading_pattern(self):
         self.root.destroy()

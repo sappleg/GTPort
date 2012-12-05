@@ -124,33 +124,33 @@ class StudentPI:
         tutorWillingLabel.pack(side=LEFT)
 
         yesRadioButton = Radiobutton(tutorWillingFrame, text="Yes",
-                variable=self.tutorWilling,value=0)
+                variable=self.tutorWilling,value=0, command=self.radio_yes)
         yesRadioButton.pack(side=LEFT)
 
         noRadioButton = Radiobutton(tutorWillingFrame, text="No",
-                variable=self.tutorWilling,value=1)
+                variable=self.tutorWilling,value=1, command=self.radio_no)
         noRadioButton.pack(side=LEFT)
 
-        tutorCoursesFrame = Frame(self.root)
-        tutorCoursesFrame.pack(padx=15, fill=X)
+        self.tutorCoursesFrame = Frame(self.root)
+        self.tutorCoursesFrame.pack(padx=15, fill=X)
 
-        tutorCoursesLabel = Label(tutorCoursesFrame, text="If Yes, select the courses you would like to tutor for ")
-        tutorCoursesLabel.pack(side=LEFT)
+        tutorCoursesLabel = Label(self.tutorCoursesFrame, text="If Yes, select the courses you would like to tutor for ")
+        tutorCoursesLabel.grid(row=0,column=0)
 
-        tutorCoursesOptionMenu = OptionMenu(tutorCoursesFrame,
+        self.tutorCoursesOptionMenu = OptionMenu(self.tutorCoursesFrame,
                 self.currentTutorCourse, *self.tutorCourses)
-        tutorCoursesOptionMenu.pack(side=LEFT)
+        self.tutorCoursesOptionMenu.grid(row=0,column=1)
 
-        addCourseButton = Button(tutorCoursesFrame, text="+",
+        addCourseButton = Button(self.tutorCoursesFrame, text="+",
                 command=self.addToSelected)
-        addCourseButton.pack(side=LEFT)
+        addCourseButton.grid(row=0,column=2)
 
-        self.tutorCoursesText = Text(tutorCoursesFrame, height=1, width=50, background="white")
-        self.tutorCoursesText.pack(side=LEFT)
+        self.tutorCoursesText = Text(self.tutorCoursesFrame, height=1, width=50, background="white")
+        self.tutorCoursesText.grid(row=0,column=3)
 
-        removeCoursesButton = Button(tutorCoursesFrame, text="Delete",
+        removeCoursesButton = Button(self.tutorCoursesFrame, text="Delete",
                 command=self.removeFromSelected)
-        removeCoursesButton.pack(side=LEFT)
+        removeCoursesButton.grid(row=0,column=4)
 
         majorFrame = Frame(self.root)
         majorFrame.pack(padx=15)
@@ -211,7 +211,8 @@ class StudentPI:
         self.contactNumber.set(items[0][10])
         self.email.set(items[0][6])
 
-        self.tutorCourses = self.getTutorCourse()
+        #self.tutorCourses = self.getTutorCourse()
+        self.tutorCourses.append("--")
         self.currentTutorCourse.set(self.tutorCourses[0])
         self.getPreviousEdu()
 
@@ -590,11 +591,20 @@ class StudentPI:
         del self.tutorCoursesSelected[:]
         self.tutorCoursesText.delete("1.0", END)
 
-    # This method is just a place holder to print out the username and password
-    # values gathered from the textfields. This will not be used in the actual
-    # application
-    def print_this(self):
-        print("Hello World")
+    def radio_yes(self):
+        self.tutorCoursesOptionMenu.grid_remove()
+        self.tutorCourses = self.getTutorCourse()
+        self.tutorCoursesOptionMenu = OptionMenu(self.tutorCoursesFrame,
+                self.currentTutorCourse, *self.tutorCourses)
+        self.tutorCoursesOptionMenu.grid(row=0,column=1)
+
+    def radio_no(self):
+        self.tutorCoursesOptionMenu.grid_remove()
+        del self.tutorCourses[:]
+        self.tutorCourses.append("--")
+        self.tutorCoursesOptionMenu = OptionMenu(self.tutorCoursesFrame,
+                self.currentTutorCourse, *self.tutorCourses)
+        self.tutorCoursesOptionMenu.grid(row=0,column=1)
 
 # This is the main method of the Login file to be used for debuggin purposes.
 # This method is used to create an instance of the Login class.

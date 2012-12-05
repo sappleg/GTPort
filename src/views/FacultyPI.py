@@ -40,8 +40,8 @@ class FacultyPI:
         self.course = StringVar(value="--")
         self.section = StringVar(value="--")
 
-        self.populate()
         self.makeWindow()
+        self.populate()
         self.root.mainloop()
 
     def populate(self):
@@ -62,15 +62,50 @@ class FacultyPI:
             self.gender.set("Male")
         elif items[0][8] == "F":
             self.gender.set("Female")
-        query = "SELECT name FROM department D, instrDept I WHERE I.instructorUsername = %s AND D.deptID = I.deptID"
+        query = "SELECT D.name FROM department D, instrDept I WHERE I.instructorUsername = %s AND D.deptID = I.deptID"
         c.execute(query, self.un)
         items = c.fetchall()
-        self.department.set(items[0][0])
-        query = "SELECT S.letter, C.courseCode FROM section S, courseSection C, teaches T WHERE T.instructorUsername = %s AND C.sectionCRN = T.sectionCRN AND C.sectionCRN = S.crn"
-        c.execute(query, self.un)
-        items = c.fetchall()
-        self.course.set(items[0][1])
-        self.section.set(items[0][0])
+        if items:
+            self.department.set(items[0][0])
+            query = "SELECT S.letter, C.courseCode FROM section S, courseSection C, teaches T WHERE T.instructorUsername = %s AND C.sectionCRN = T.sectionCRN AND C.sectionCRN = S.crn"
+            c.execute(query, self.un)
+            items2 = c.fetchall()
+            if items2:
+                self.course.set(items2[0][1])
+                self.section.set(items2[0][0])
+                if self.department.get() != "--":
+                    query = "SELECT C.courseCode FROM coursesOffered C, department D WHERE C.deptID = D.deptID AND D.name = %s"
+                    c.execute(query, self.department.get())
+                    items = c.fetchall()
+                    self.courseList = ["--"]
+                    for i in items:
+                        self.courseList += [i[0]]
+                    self.courseOptionMenu.pack_forget()
+                    self.courseOptionMenu = OptionMenu(self.courseFrame, self.course, *self.courseList, command=self.getSections)
+                    self.courseOptionMenu.pack(side=LEFT)
+                else:
+                    showwarning("ERROR", "Please select a valid department.")
+
+                if self.course.get() != "--":
+                    query = "SELECT S.letter FROM section S, courseSection C WHERE S.crn = C.sectionCRN AND C.courseCode = %s"
+                    c.execute(query, self.course.get())
+                    items = c.fetchall()
+                    self.sectionList = ["--"]
+                    for i in items:
+                        self.sectionList += [i[0]]
+                    self.sectionOptionMenu.pack_forget()
+                    self.sectionOptionMenu = OptionMenu(self.sectionFrame, self.section, *self.sectionList)
+                    self.sectionOptionMenu.pack(side=LEFT)
+                else:
+                    showwarning("ERROR", "Please select a valid course.")
+
+            else:
+                self.course.set("--")
+                self.section.set("--")
+                self.getCourses(self.department.get())
+                #self.getSections(self.c)
+        else:
+            self.department.set("--")
         query = "SELECT research FROM researchInterests WHERE instructorUsername = %s"
         c.execute(query, self.un)
         items = c.fetchall()
@@ -82,7 +117,6 @@ class FacultyPI:
         self.researchInterests.set(string)
         c.close()
         self.db.close()
-        
 
     # This method is used to construct the actual view. Names of variables
     # should be intuitive. Three frames are used to control the layout of the
@@ -259,14 +293,49 @@ class FacultyPI:
                 c.execute(query, self.department.get())
                 items = c.fetchall()
                 actDept = items[0][0]
-                query = "UPDATE instrDept SET deptID = %s WHERE instructorUsername = %s"
-                c.execute(query, (actDept, self.un))
-                query = "SELECT S.crn FROM section S, courseSection C WHERE S.crn = C.sectionCRN AND C.courseCode = %s AND S.letter = %s"
+
+                query = """SELECT count( *) FROM instrDept WHERE
+                instructorUsername=%s"""
+                c.execute(query, self.un)
+                count = c.fetchall()[0][0]
+                if count == 0:
+                    query = """INSERT INTO instrDept VALUES(%s,%s)"""
+                    c.execute(query, (self.un,actDept))
+                else:
+                    query = "UPDATE instrDept SET deptID = %s WHERE instructorUsername = %s"
+                    c.execute(query, (actDept, self.un))
+
+                query = """SELECT count( *) FROM teaches WHERE
+                instructorUsername=%s"""
+                c.execute(query, (self.un))
+                count = c.fetchall()[0][0]
+                query = """SELECT S.crn FROM section S, courseSection C WHERE S.crn
+                = C.sectionCRN AND C.courseCode = %s AND S.letter = %s"""
                 c.execute(query, (self.course.get(), self.section.get()))
-                items = c.fetchall()
-                actSection = items[0][0]
-                query = "UPDATE teaches SET sectionCRN = %s WHERE instructorUsername = %s"
-                c.execute(query, (actSection, self.un))
+                crn = c.fetchall()[0][0]
+                if count == 0:
+                    query = """ INSERT INTO teaches VALUES(%s,%s)"""
+                    c.execute(query,(self.un, crn))
+                else:
+                    query = """UPDATE teaches SET sectionCRN=%s WHERE
+                    instructorUsername=%s"""
+                    c.execute(query, (crn, self.un))
+
+                query = """DELETE FROM researchInterests WHERE
+                instructorUsername=%s"""
+                c.execute(query, self.un)
+                ints = self.researchInterests.get().split(",")
+                for i in range(len(ints)):
+                    ints[i] = ints[i].strip()
+                    query = """SELECT count( *) FROM researchInterests WHERE
+                    instructorUsername=%s AND research=%s"""
+                    c.execute(query, (self.un, ints[i]))
+                    counts = c.fetchall()[0][0]
+                    if counts == 0:
+                        query = """INSERT INTO researchInterests
+                        VALUES(%s,%s)"""
+                        c.execute(query, (self.un, ints[i]))
+
             else:
                 if self.position.get() == "--":
                     showwarning("ERROR","Please select a position.")
@@ -280,11 +349,16 @@ class FacultyPI:
                 db4.commit()
                 db4.close()
                 return
+
+            c.close()
+            db4.commit()
+            db4.close()
             showinfo("Success", "You successfully updated your information")
             self.root.destroy()
             self.Driver.launch_homepage([0,1,0],self.un)
         except:
             showwarning("ERROR","Course already taught by\na different professor.\nPlease select a different course/section.")
+            return
         c.close()
         db4.commit()
         db4.close()
