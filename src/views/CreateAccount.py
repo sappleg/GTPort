@@ -81,10 +81,11 @@ class CreateAccount:
     def register(self):
         if self.password.get() != self.confirmPassword.get():
             showwarning("ERROR","Your passwords do not match.\nPlease retype and try again.")
+            return
         elif self.userType.get() == "--":
             showwarning("ERROR","Please select an account type.")
+            return
         else:
-            go = 0
             db = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36", db='cs4400_Group36')
             c = db.cursor()
             query = "SELECT COUNT(*) FROM user WHERE username = %s"
@@ -92,26 +93,24 @@ class CreateAccount:
             items = c.fetchall()
             if items[0][0] > 0:
                 showwarning("ERROR","That username is already taken!\nPlease select a different username\nand try again.")
+                return
             else:
                 query1 = "INSERT INTO user (username, password) VALUES (%s, %s)"
-                query2 = ""
+                c.execute(query1, (self.username.get(), self.password.get()))
                 if self.userType.get() == "Instructor":
                     query2 = "INSERT INTO instructor (username) VALUES (%s)"
+                    c.execute(query2, self.username.get())
                     counts = [0,1,0]
                 elif self.userType.get() == "Student":
                     query2 = "INSERT INTO student (username) VALUES (%s)"
-                    counts = [1,0,0]
-                c.execute(query1, (self.username.get(), self.password.get()))
-                if query2 != "":
                     c.execute(query2, self.username.get())
-                go = 1
+                    counts = [1,0,0]
             c.close()
             db.commit()
             db.close()
-            if go == 1:
-                showinfo("Success","Registration successful.")
-                self.root.destroy()
-                self.Driver.launch_homepage(counts, self.username.get())
+        showinfo("Success","Registration successful.")
+        self.root.destroy()
+        self.Driver.launch_homepage(counts, self.username.get())
 
 
     def cancel(self):
