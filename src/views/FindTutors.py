@@ -64,6 +64,7 @@ class FindTutors:
         tutorList = []
         if len(self.course.get()) > 0 and len(self.keyword.get()) > 0:
             showwarning("ERROR","Please only enter one search criteria.")
+            return
         elif len(self.course.get()) > 0 and len(self.keyword.get()) == 0:
             searchItem = self.course.get()
             db = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj" , user ="cs4400_Group36",
@@ -92,6 +93,7 @@ class FindTutors:
             db.close()
         else:
             showwarning("ERROR","Please enter a valid search.")
+            return
 
         if len(tutorList) > 0:
             self.frame.grid_remove()
@@ -115,6 +117,7 @@ class FindTutors:
             self.frame.grid(row = 2, columnspan = 5)
         else:
             showwarning("ERROR","Sorry, no tutors to display.\nPlease alter your search criteria\nand try again.")
+            return
 
     def returnHome(self):
         self.root.destroy()
