@@ -305,13 +305,6 @@ class FacultyPI:
                     query = "UPDATE instrDept SET deptID = %s WHERE instructorUsername = %s"
                     c.execute(query, (actDept, self.un))
 
-                #query = "SELECT S.crn FROM section S, courseSection C WHERE S.crn = C.sectionCRN AND C.courseCode = %s AND S.letter = %s"
-                #c.execute(query, (self.course.get(), self.section.get()))
-                #items = c.fetchall()
-                #actSection = items[0][0]
-                #query = "UPDATE teaches SET sectionCRN = %s WHERE instructorUsername = %s"
-                #c.execute(query, (actSection, self.un))
-
                 query = """SELECT count( *) FROM teaches WHERE
                 instructorUsername=%s"""
                 c.execute(query, (self.un))
