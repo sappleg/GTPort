@@ -104,13 +104,13 @@ class CreateAccount:
                 c.execute(query1, (self.username.get(), self.password.get()))
                 if query2 != "":
                     c.execute(query2, self.username.get())
-                self.root.destroy()
                 go = 1
             c.close()
             db.commit()
             db.close()
             if go == 1:
                 showinfo("Success","Registration successful.")
+                self.root.destroy()
                 self.Driver.launch_homepage(counts, self.username.get())
 
 
