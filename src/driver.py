@@ -51,7 +51,7 @@ class Driver:
             if selection == 0:
                 spi = StudentPI(self.student.getUsername(),self)
             elif selection == 1:
-                ss = StudentServices(self)
+                ss = StudentServices(self, self.student.getUsername())
         elif user_type == "instructor":
             if selection == 0:
                 fpi = FacultyPI(self, self.faculty.getUsername())
