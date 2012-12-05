@@ -40,6 +40,9 @@ class FacultyPI:
         self.course = StringVar(value="--")
         self.section = StringVar(value="--")
 
+        self.sectionsSelected = []
+        self.sectionsTeaching = StringVar()
+
         self.makeWindow()
         self.populate()
         self.root.mainloop()
@@ -73,6 +76,18 @@ class FacultyPI:
             if items2:
                 self.course.set(items2[0][1])
                 self.section.set(items2[0][0])
+
+                for i in range(len(items2)):
+                    self.sectionsSelected.append(items2[i][0])
+
+                string = ""
+                for i in range(len(self.sectionsSelected)):
+                    string += self.sectionsSelected[i]
+                    if i != (len(self.sectionsSelected)-1):
+                        string += ", "
+                self.sectionsText.insert(INSERT, string)
+                self.sectionsTeaching.set(string)
+
                 if self.department.get() != "--":
                     query = "SELECT C.courseCode FROM coursesOffered C, department D WHERE C.deptID = D.deptID AND D.name = %s"
                     c.execute(query, self.department.get())
@@ -98,6 +113,9 @@ class FacultyPI:
                     self.sectionOptionMenu.pack(side=LEFT)
                 else:
                     showwarning("ERROR", "Please select a valid course.")
+
+                #if self.section.get() != "--":
+                #query="""SELECT count( *) FROM
 
             else:
                 self.course.set("--")
@@ -221,10 +239,26 @@ class FacultyPI:
         
         sectionLabel = Label(self.sectionFrame, text="Section")
         sectionLabel.pack(side=LEFT)
+        #sectionLabel.grid(row=0,column=0)
 
         self.sectionList = ["--"]
         self.sectionOptionMenu = OptionMenu(self.sectionFrame, self.section, *self.sectionList)
         self.sectionOptionMenu.pack(side=LEFT)
+        #self.sectionOptionMenu.grid(row=0,column=1)
+
+        addSectionButton = Button(self.sectionFrame, text="+",
+                command=self.addToSelected)
+        addSectionButton.pack(side=LEFT)
+        #addSectionButton.grid(row=0,column=2)
+
+        self.sectionsText = Text(self.sectionFrame, height=1, width=50, background="white")
+        self.sectionsText.pack(side=LEFT)
+        #self.sectionsText.grid(row=0,column=3)
+
+        removeCoursesButton = Button(self.sectionFrame, text="Delete",
+                command=self.removeFromSelected)
+        removeCoursesButton.pack(side=LEFT)
+        #removeCoursesButton.grid(row=0,column=4)
         
         RIFrame = Frame(self.root)
         RIFrame.pack(padx=10)
@@ -285,83 +319,109 @@ class FacultyPI:
     def submitInfo(self):
         db4 = pymysql.connect(host = "academic-mysql.cc.gatech.edu" , passwd = "a1Rlxylj", user = "cs4400_Group36", db='cs4400_Group36')
         c = db4.cursor()
-        try:
-            if self.position.get() != "--" and self.department.get() != "--" and self.course.get() != "--" and self.section.get() != "--":
-                query = "UPDATE instructor SET position=%s, address=%s, name=%s, email=%s, dob=%s, permAddress=%s, gender=%s, contactNum=%s WHERE username=%s"
-                c.execute(query, (self.position.get(), self.address.get(), self.name.get(), self.email.get(), self.dob.get(), self.permAddress.get(), self.gender.get(), self.contactNumber.get(), self.un))
-                query = "SELECT deptID FROM department WHERE name = %s"
-                c.execute(query, self.department.get())
-                items = c.fetchall()
-                actDept = items[0][0]
+        #try:
+        if self.position.get() != "--" and self.department.get() != "--" and self.course.get() != "--" and self.section.get() != "--":
+            query = "UPDATE instructor SET position=%s, address=%s, name=%s, email=%s, dob=%s, permAddress=%s, gender=%s, contactNum=%s WHERE username=%s"
+            c.execute(query, (self.position.get(), self.address.get(), self.name.get(), self.email.get(), self.dob.get(), self.permAddress.get(), self.gender.get(), self.contactNumber.get(), self.un))
+            query = "SELECT deptID FROM department WHERE name = %s"
+            c.execute(query, self.department.get())
+            items = c.fetchall()
+            actDept = items[0][0]
 
-                query = """SELECT count( *) FROM instrDept WHERE
-                instructorUsername=%s"""
-                c.execute(query, self.un)
-                count = c.fetchall()[0][0]
-                if count == 0:
-                    query = """INSERT INTO instrDept VALUES(%s,%s)"""
-                    c.execute(query, (self.un,actDept))
-                else:
-                    query = "UPDATE instrDept SET deptID = %s WHERE instructorUsername = %s"
-                    c.execute(query, (actDept, self.un))
+            query = """SELECT count( *) FROM instrDept WHERE
+            instructorUsername=%s"""
+            c.execute(query, self.un)
+            count = c.fetchall()[0][0]
+            if count == 0:
+                query = """INSERT INTO instrDept VALUES(%s,%s)"""
+                c.execute(query, (self.un,actDept))
+            else:
+                query = "UPDATE instrDept SET deptID = %s WHERE instructorUsername = %s"
+                c.execute(query, (actDept, self.un))
 
-                query = """SELECT count( *) FROM teaches WHERE
-                instructorUsername=%s"""
-                c.execute(query, (self.un))
-                count = c.fetchall()[0][0]
+            query = """SELECT count( *) FROM teaches WHERE
+            instructorUsername=%s"""
+            c.execute(query, (self.un))
+            count = c.fetchall()[0][0]
+            if count == 0:
                 query = """SELECT S.crn FROM section S, courseSection C WHERE S.crn
                 = C.sectionCRN AND C.courseCode = %s AND S.letter = %s"""
                 c.execute(query, (self.course.get(), self.section.get()))
                 crn = c.fetchall()[0][0]
-                if count == 0:
-                    query = """ INSERT INTO teaches VALUES(%s,%s)"""
-                    c.execute(query,(self.un, crn))
-                else:
-                    query = """UPDATE teaches SET sectionCRN=%s WHERE
-                    instructorUsername=%s"""
-                    c.execute(query, (crn, self.un))
-
-                query = """DELETE FROM researchInterests WHERE
-                instructorUsername=%s"""
-                c.execute(query, self.un)
-                ints = self.researchInterests.get().split(",")
-                for i in range(len(ints)):
-                    ints[i] = ints[i].strip()
-                    query = """SELECT count( *) FROM researchInterests WHERE
-                    instructorUsername=%s AND research=%s"""
-                    c.execute(query, (self.un, ints[i]))
-                    counts = c.fetchall()[0][0]
-                    if counts == 0:
-                        query = """INSERT INTO researchInterests
-                        VALUES(%s,%s)"""
-                        c.execute(query, (self.un, ints[i]))
-
+                query = """ INSERT INTO teaches VALUES(%s,%s)"""
+                c.execute(query,(self.un, crn))
             else:
-                if self.position.get() == "--":
-                    showwarning("ERROR","Please select a position.")
-                elif self.department.get() == "--":
-                    showwarning("ERROR","Please select a department.")
-                elif self.course.get() == "--" or self.section.get() == "--":
-                    showwarning("ERROR","Please select a course/section.")
-                else:
-                    showwarning("ERROR","Invalid, please try again.")
-                c.close()
-                db4.commit()
-                db4.close()
-                return
+                query = """DELETE FROM teaches WHERE instructorUsername=%s"""
+                c.execute(query, self.un)
+                string = self.sectionsTeaching.get().split(",")
+                for i in range(len(string)):
+                    string[i] = string[i].strip()
+                    query = """SELECT S.crn FROM section S, courseSection C WHERE S.crn
+                    = C.sectionCRN AND C.courseCode = %s AND S.letter = %s"""
+                    c.execute(query, (self.course.get(), string[i]))
+                    crn = c.fetchall()[0][0]
+                    query = """INSERT INTO teaches VALUES(%s,%s)"""
+                    c.execute(query, (self.un,crn))
 
+            query = """DELETE FROM researchInterests WHERE
+            instructorUsername=%s"""
+            c.execute(query, self.un)
+            ints = self.researchInterests.get().split(",")
+            for i in range(len(ints)):
+                ints[i] = ints[i].strip()
+                query = """SELECT count( *) FROM researchInterests WHERE
+                instructorUsername=%s AND research=%s"""
+                c.execute(query, (self.un, ints[i]))
+                counts = c.fetchall()[0][0]
+                if counts == 0:
+                    query = """INSERT INTO researchInterests
+                    VALUES(%s,%s)"""
+                    c.execute(query, (self.un, ints[i]))
+
+        else:
+            if self.position.get() == "--":
+                showwarning("ERROR","Please select a position.")
+            elif self.department.get() == "--":
+                showwarning("ERROR","Please select a department.")
+            elif self.course.get() == "--" or self.section.get() == "--":
+                showwarning("ERROR","Please select a course/section.")
+            else:
+                showwarning("ERROR","Invalid, please try again.")
             c.close()
             db4.commit()
             db4.close()
-            showinfo("Success", "You successfully updated your information")
-            self.root.destroy()
-            self.Driver.launch_homepage([0,1,0],self.un)
-        except:
-            showwarning("ERROR","Course already taught by\na different professor.\nPlease select a different course/section.")
             return
+
         c.close()
         db4.commit()
         db4.close()
+        showinfo("Success", "You successfully updated your information")
+        self.root.destroy()
+        self.Driver.launch_homepage([0,1,0],self.un)
+        #except:
+            #showwarning("ERROR","Course already taught by\na different professor.\nPlease select a different course/section.")
+            #return
+        #c.close()
+        #db4.commit()
+        #db4.close()
+
+    def addToSelected(self):
+        if self.section.get() == "--":
+            return
+        else:
+            self.sectionsSelected.append(self.section.get())
+        self.sectionsText.delete("1.0", END)
+        string = ""
+        for i in range(len(self.sectionsSelected)):
+            string += self.sectionsSelected[i]
+            if i != (len(self.sectionsSelected)-1):
+                string += ", "
+        self.sectionsText.insert(INSERT, string)
+        self.sectionsTeaching.set(string)
+
+    def removeFromSelected(self):
+        del self.sectionsSelected[:]
+        self.sectionsText.delete("1.0", END)
 
 # This is the main method of the Login file to be used for debuggin purposes.
 # This method is used to create an instance of the Login class.
