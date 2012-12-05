@@ -53,9 +53,20 @@ class AdminReport:
             for i in items:
                 y = []
                 for x in i:
-                    y += [x]
+                    y += [[x]]
                 y += [0,0,0,0,0]
                 itemList += [y]
+            for i in itemList:
+                query = "SELECT COUNT(*) FROM course WHERE title = %s AND code NOT LIKE %s"
+                c.execute(query, (i[1], i[0]))
+                itemA = c.fetchall()
+                for a in itemA:
+                    if a[0] > 0:
+                        query = "SELECT code FROM course WHERE title = %s AND code NOT LIKE %s"
+                        c.execute(query, (i[1], i[0]))
+                        n = c.fetchall()
+                        for m in n:
+                            i[0] += [m[0]]
             for i in itemList:
                 queryA = "SELECT grade FROM registers R, courseSection C WHERE R.sectionCRN = C.sectionCRN AND C.courseTitle = %s"
                 c.execute(queryA, i[1])
@@ -79,7 +90,14 @@ class AdminReport:
                 x += [float(round(gpa,2))]
             goodList = []
             for y in itemList:
-                goodList += [[y[0],y[1],y[7]]]
+                string = y[0][0]
+                if len(y[0]) > 1:
+                    string = ""
+                    for t in range(len(y[0])):
+                        string += y[0][t]
+                        if t != (len(y[0])-1):
+                            string += "/"
+                goodList += [[string,y[1][0],y[7]]]
             c.close()
             db.close()
             # Something about this grid remove/forget doesnt
