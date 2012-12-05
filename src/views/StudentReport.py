@@ -102,14 +102,8 @@ class StudentReport:
             showwarning("ERROR", "Please select a valid department.")
 
     def returnHome(self):
-        print("hello")
         self.root.destroy()
         self.Driver.launch_homepage([1,0,0],self.un)
-        
-
-
-
 
 if __name__=="__main__":
     app = StudentReport()
-
